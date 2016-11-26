@@ -47,15 +47,15 @@ class Netatmo:
             'scope': scope
         }
         try:
-            response = requests.post("https://api.netatmo.com/oauth2/token", data=payload)
+            response = requests.post('https://api.netatmo.com/oauth2/token', data=payload)
             response.raise_for_status()
-            access_token = response.json()["access_token"]
-            refresh_token = response.json()["refresh_token"]
-            scope = response.json()["scope"]
+            access_token = response.json()['access_token']
+            refresh_token = response.json()['refresh_token']
+            scope = response.json()['scope']
             if verbose:
-                print("Your access token is:", access_token)
-                print("Your refresh token is:", refresh_token)
-                print("Your scopes are:", scope)
+                print('Your access token is:', access_token)
+                print('Your refresh token is:', refresh_token)
+                print('Your scopes are:', scope)
             return {'access_token': access_token, 'refresh_token': refresh_token, 'scope': scope}
         except requests.exceptions.HTTPError as error:
             print(error.response.status_code, error.response.text)
@@ -73,9 +73,9 @@ class Thermostat(Netatmo):
             'device_id': self.device_id
         }
         try:
-            response = requests.post("https://api.netatmo.com/api/getthermostatsdata", params=params)
+            response = requests.post('https://api.netatmo.com/api/getthermostatsdata', params=params)
             response.raise_for_status()
-            data = response.json()["body"]
+            data = response.json()['body']
             return data
         except requests.exceptions.HTTPError as error:
             print(error.response.status_code, error.response.text)
@@ -84,9 +84,3 @@ class Thermostat(Netatmo):
         thermostat_data = self.get_thermostat_data()
         temp = thermostat_data['devices'][0]['modules'][0]['measured']['temperature']
         return temp
-
-
-if __name__ == '__main__':
-    NT = Thermostat('70:ee:50:24:1b:6a')
-    print(NT.get_current_temperature())
-    print(json.dumps(NT.get_thermostat_data(), indent=4))
