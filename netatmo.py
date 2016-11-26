@@ -13,7 +13,7 @@ import logging
     "password": "PASSWORD",
     "client_id": "CLIENT-ID RETRIEVED FROM dev.netatmo.com",
     "client_secret": "CLIENT-SECRET RETRIEVED FROM dev.netatmo.com",
-    "scope": "SPACE-SEPARATED SCOPE (e.g. "read_thermostat write_thermostat")"
+    "scope": "SPACE-SEPARATED SCOPES (e.g. "read_thermostat write_thermostat")"
 }
 '''
 
@@ -63,9 +63,10 @@ class Netatmo:
 
 class Thermostat(Netatmo):
 
-    def __init__(self, device_id):
+    def __init__(self, device_id, module_ids):
         Netatmo.__init__(self)
         self.device_id = device_id
+        self.module_ids = module_ids
 
     def get_thermostat_data(self):
         params = {
@@ -84,3 +85,22 @@ class Thermostat(Netatmo):
         thermostat_data = self.get_thermostat_data()
         temp = thermostat_data['devices'][0]['modules'][0]['measured']['temperature']
         return temp
+
+    def set_therm_point(self, module_id, setpoint_mode, setpoint_endtime=None, setpoint_temp=None):
+        # This is methods has not been tested yet
+        params = {
+            'access_token': self.access_token,
+            'device_id': self.device_id,
+            'module_id': module_id,
+            'setpoint_mode': setpoint_mode,
+        }
+        if setpoint_endtime:
+            params['setpoint_endtime'] = setpoint_endtime
+        if setpoint_temp:
+            params['setpoint_temp'] = setpoint_temp
+        try:
+            response = requests.post('https://api.netatmo.com/api/setthermpoint', params=params)
+            response.raise_for_status()
+            data = response.json()
+        except requests.exceptions.HTTPError as error:
+            print(error.response.status_code, error.response.text)
