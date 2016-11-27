@@ -62,10 +62,10 @@ class Thermostat(Netatmo):
     def __init__(self, device_id, log_level='WARNING'):
         Netatmo.__init__(self, log_level)
         self.device_id = device_id
-        self.get_thermostat_data()      # Test call to check if device_id is valid
+        self.get_thermostats_data()      # Test call to check if device_id is valid
         logger.debug('Thermostat.__init__ completed')
 
-    def get_thermostat_data(self):
+    def get_thermostats_data(self):
         logger.debug('Getting thermostat data...')
         params = {
             'access_token': self.access_token,
@@ -82,7 +82,7 @@ class Thermostat(Netatmo):
 
     def get_module_ids(self):
         logger.debug('Getting modules\' id...')
-        data = self.get_thermostat_data()
+        data = self.get_thermostats_data()
         modules_ids = list()
         for device in data['devices']:
             if device['_id'] == self.device_id:
@@ -92,7 +92,7 @@ class Thermostat(Netatmo):
 
     def get_current_temperatures(self):
         logger.debug('Getting current temperatures...')
-        thermostat_data = self.get_thermostat_data()
+        thermostat_data = self.get_thermostats_data()
         data = {'temp': [], 'setpoint_temp': []}
         for device in thermostat_data['devices']:
             if device['_id'] == self.device_id:
