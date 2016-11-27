@@ -130,11 +130,16 @@ class Thermostat(Netatmo):
 
 class Welcome(Netatmo):
 
-    def __init__(self, size=15, log_level='WARNING'):
+    class _NoDevice( Exception ):
+        pass
+
+    def __init__(self, name, log_level='WARNING'):
         Netatmo.__init__(self, log_level)
+        self.name = name
+        self.id, self.home_id, self.vpn_url = self._get_camera_info(self.name)
         logger.debug('Welcome.__init__ completed')
 
-    def get_homes_data(self, size=15, home_id=None):
+    def get_home_data(self, size=15, home_id=None):
         logger.debug('Getting home data...')
         params = {
             'access_token': self.access_token,
@@ -150,24 +155,17 @@ class Welcome(Netatmo):
         except requests.exceptions.HTTPError as error:
             logger.error(str(error.response.status_code) + ' ' + error.response.text)
 
-    def get_homes_ids(self):
-        logger.debug('Getting homes id...')
-        data = self.get_homes_data()
-        ids = [home['id'] for home in data]
-        if not ids:
-            logger.error('No camera avaible')
-        return ids
-
     def get_cameras_data(self):
         logger.debug('Getting cameras data...')
-        data = self.get_homes_data()
+        data = self.get_home_data()
         cameras = {home['id']: home['cameras'] for home in data}
         return cameras
 
-    def get_cameras_ids(self):
-        logger.debug('Getting cameras id')
+    def _get_camera_info(self, name):
+        logger.debug('Getting camera id')
         data = self.get_cameras_data()
-        ids = list()
         for key in data.keys():
-            ids += [camera['id'] for camera in data[key]]
-        return ids
+            camera_id = [ (camera['id'],key,camera['vpn_url'] ) for camera in data[key] if camera['name'] == name]
+        if len(camera_id) == 0:
+            raise self._NoDevice('No camera found with this name')
+        return camera_id[0]
