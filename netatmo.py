@@ -11,7 +11,6 @@ __version__ = '0.0.1'
 logger = logging.getLogger('netatmo')
 HOME = os.getenv('HOME') + '/'
 
-
 class Netatmo:
 
     def __init__(self, log_level):
@@ -126,3 +125,49 @@ class Thermostat(Netatmo):
         else:
             raise RuntimeError('Invalid choice for setpoint_mode. Choose from ' +
                                str(allowed_setpoint_modes))
+
+
+class Welcome(Netatmo):
+    def __init__(self,size = 15,log_level='WARNING'):
+        Netatmo.__init__(self, log_level)
+        self.size = size
+        #self.get_home_data()      # Test call to check if device_id is valid
+        logger.debug('Welcome.__init__ completed')
+
+    def get_homes_data(self):
+        logger.debug('Getting home data...')
+        params = {
+            'access_token': self.access_token ,
+            'size':self.size
+        }
+        try:
+            response = requests.post('https://api.netatmo.com/api/gethomedata', params=params)
+            response.raise_for_status()
+            data = response.json()['body']['homes']
+            return data
+
+        except requests.exceptions.HTTPError as error:
+            logger.error(str(error.response.status_code) + ' ' + error.response.text)
+
+    def get_homes_ids(self):
+        logger.debug('Getting homes id..')
+        data = self.get_homes_data()
+        ids = [ home['id'] for home in data ]
+        if not ids :
+            logger.error('No camera avaible')
+        return ids
+
+    def get_cameras_data(self):
+        logger.debug('Getting cameras data...')
+        data = self.get_homes_data()
+
+        cameras = { home['id']: home['cameras'] for home in data }
+        return cameras
+
+    def get_cameras_ids(self):
+        logger.debug('Getting cameras id')
+        data = self.get_cameras_data()
+        ids = list()
+        for key in data.keys():
+            ids += [camera['id'] for camera in data[key]]
+        return ids

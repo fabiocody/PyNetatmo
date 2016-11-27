@@ -14,3 +14,5 @@ In order to use this API wrapper you have to put in your home directory a file n
     "scope": "SPACE-SEPARATED SCOPES (e.g. read_thermostat write_thermostat')"
 }
 ```
+Use: 'read_thermostat write_thermostat' in order to access Thermostat API
+Use: 'read_camera access_camera' in order to access Welcome API
