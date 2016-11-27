@@ -54,7 +54,7 @@ class Netatmo:
             logger.debug('Authorization completed')
             return {'access_token': access_token, 'refresh_token': refresh_token, 'scope': scope}
         except requests.exceptions.HTTPError as error:
-            logger.error(error.response.status_code + ' ' + error.response.text)
+            logger.error(str(error.response.status_code) + ' ' + error.response.text)
 
 
 class Thermostat(Netatmo):
@@ -62,6 +62,7 @@ class Thermostat(Netatmo):
     def __init__(self, device_id, log_level='WARNING'):
         Netatmo.__init__(self, log_level)
         self.device_id = device_id
+        self.get_thermostat_data()      # Test call to check if device_id is valid
         logger.debug('Thermostat.__init__ completed')
 
     def get_thermostat_data(self):
@@ -77,7 +78,7 @@ class Thermostat(Netatmo):
             logger.debug('Request completed')
             return response.json()['body']
         except requests.exceptions.HTTPError as error:
-            logger.error(error.response.status_code + ' ' + error.response.text)
+            logger.error(str(error.response.status_code) + ' ' + error.response.text)
 
     def get_module_ids(self):
         logger.debug('Getting modules\' id...')
@@ -121,7 +122,7 @@ class Thermostat(Netatmo):
                 logger.debug('Request completed')
                 return data
             except requests.exceptions.HTTPError as error:
-                logger.error(error.response.status_code + ' ' + error.response.text)
+                logger.error(str(error.response.status_code) + ' ' + error.response.text)
         else:
             raise RuntimeError('Invalid choice for setpoint_mode. Choose from ' +
                                str(allowed_setpoint_modes))
