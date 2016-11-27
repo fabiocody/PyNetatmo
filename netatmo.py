@@ -27,7 +27,7 @@ class Netatmo:
             with open(HOME + '.pynetatmo.conf', 'r') as f:
                 conf = json.load(f)
                 logger.debug('Configuration loaded')
-        except:
+        except FileNotFoundError:
             logger.error('Could not find ~/.pynetatmo.conf')
             exit(1)
         auth_dict = self.auth(conf['user'], conf['password'], conf[
@@ -159,7 +159,7 @@ class Welcome(Netatmo):
             logger.debug('Request completed')
             return data
         except requests.exceptions.HTTPError as error:
-            logger.error(str(error.response.status_code) + ' ' + error.response.text)
+            raise APIError(error.response.text)
 
     def get_cameras_data(self):
         logger.debug('Getting cameras data...')
