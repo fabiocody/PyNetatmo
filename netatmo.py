@@ -11,6 +11,7 @@ __version__ = '0.0.1'
 logger = logging.getLogger('netatmo')
 HOME = os.getenv('HOME') + '/'
 
+
 class Netatmo:
 
     def __init__(self, log_level):
@@ -128,11 +129,12 @@ class Thermostat(Netatmo):
 
 
 class Welcome(Netatmo):
-    def __init__(self,size = 15,log_level='WARNING'):
+
+    def __init__(self, size=15, log_level='WARNING'):
         Netatmo.__init__(self, log_level)
         logger.debug('Welcome.__init__ completed')
 
-    def get_homes_data(self, size= 15, home_id = None):
+    def get_homes_data(self, size=15, home_id=None):
         logger.debug('Getting home data...')
         params = {
             'access_token': self.access_token,
@@ -143,24 +145,23 @@ class Welcome(Netatmo):
             response = requests.post('https://api.netatmo.com/api/gethomedata', params=params)
             response.raise_for_status()
             data = response.json()['body']['homes']
+            logger.debug('Request completed')
             return data
-
         except requests.exceptions.HTTPError as error:
             logger.error(str(error.response.status_code) + ' ' + error.response.text)
 
     def get_homes_ids(self):
-        logger.debug('Getting homes id..')
+        logger.debug('Getting homes id...')
         data = self.get_homes_data()
-        ids = [ home['id'] for home in data ]
-        if not ids :
+        ids = [home['id'] for home in data]
+        if not ids:
             logger.error('No camera avaible')
         return ids
 
     def get_cameras_data(self):
         logger.debug('Getting cameras data...')
         data = self.get_homes_data()
-
-        cameras = { home['id']: home['cameras'] for home in data }
+        cameras = {home['id']: home['cameras'] for home in data}
         return cameras
 
     def get_cameras_ids(self):
