@@ -12,7 +12,7 @@ logger = logging.getLogger('netatmo')
 HOME = os.getenv('HOME') + '/'
 
 
-class APIError(RuntimeError):
+class APIError(Exception):
 
     def __init__(self, message=None):
         self.message = message
@@ -60,7 +60,7 @@ class Netatmo:
             logger.debug('Authorization completed')
             return {'access_token': access_token, 'refresh_token': refresh_token, 'scope': scope}
         except requests.exceptions.HTTPError as error:
-            raise RuntimeError(str(error.response.status_code) + ' - ' + error.response.text)
+            raise APIError(error.response.text)
 
 
 class Thermostat(Netatmo):
@@ -84,7 +84,7 @@ class Thermostat(Netatmo):
             logger.debug('Request completed')
             return response.json()['body']
         except requests.exceptions.HTTPError as error:
-            raise APIError(str(error.response.status_code) + ' - ' + error.response.text)
+            raise APIError(error.response.text)
 
     def get_module_ids(self):
         logger.debug('Getting modules\' id...')
@@ -128,7 +128,7 @@ class Thermostat(Netatmo):
                 logger.debug('Request completed')
                 return data
             except requests.exceptions.HTTPError as error:
-                raise RuntimeError(str(error.response.status_code) + ' - ' + error.response.text)
+                raise APIError(error.response.text)
         else:
             logger.error('Invalid choice for setpoint_mode. Choose from ' +
                          str(allowed_setpoint_modes))
