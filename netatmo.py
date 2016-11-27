@@ -78,7 +78,7 @@ class Thermostat(Netatmo):
             logger.debug('Request completed')
             return response.json()['body']
         except requests.exceptions.HTTPError as error:
-            logger.error(str(error.response.status_code) + ' ' + error.response.text)
+            raise RuntimeError(str(error.response.status_code) + ' ' + error.response.text)
 
     def get_module_ids(self):
         logger.debug('Getting modules\' id...')
@@ -122,10 +122,10 @@ class Thermostat(Netatmo):
                 logger.debug('Request completed')
                 return data
             except requests.exceptions.HTTPError as error:
-                logger.error(str(error.response.status_code) + ' ' + error.response.text)
+                raise RuntimeError(str(error.response.status_code) + ' ' + error.response.text)
         else:
-            raise RuntimeError('Invalid choice for setpoint_mode. Choose from ' +
-                               str(allowed_setpoint_modes))
+            logger.error('Invalid choice for setpoint_mode. Choose from ' +
+                         str(allowed_setpoint_modes))
 
 
 class Welcome(Netatmo):
