@@ -5,20 +5,8 @@ import requests
 import json
 import logging
 
+
 __version__ = '0.0.1'
-
-
-'''
-~/.pynetatmo.conf
-{
-    "user": "E-MAIL",
-    "password": "PASSWORD",
-    "client_id": "CLIENT-ID RETRIEVED FROM dev.netatmo.com",
-    "client_secret": "CLIENT-SECRET RETRIEVED FROM dev.netatmo.com",
-    "scope": "SPACE-SEPARATED SCOPES (e.g. "read_thermostat write_thermostat")"
-}
-'''
-
 
 logger = logging.getLogger('netatmo')
 HOME = os.getenv('HOME') + '/'
