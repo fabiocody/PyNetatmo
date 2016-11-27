@@ -14,7 +14,7 @@ HOME = os.getenv('HOME') + '/'
 
 class APIError(RuntimeError):
 
-    def __init__(self, message):
+    def __init__(self, message=None):
         self.message = message
 
 
@@ -136,7 +136,7 @@ class Thermostat(Netatmo):
 
 class Welcome(Netatmo):
 
-    class _NoDevice( Exception ):
+    class _NoDevice(Exception):
         pass
 
     def __init__(self, name, log_level='WARNING'):
@@ -171,7 +171,7 @@ class Welcome(Netatmo):
         logger.debug('Getting camera id')
         data = self.get_cameras_data()
         for key in data.keys():
-            camera_id = [ (camera['id'],key,camera['vpn_url'] ) for camera in data[key] if camera['name'] == name]
+            camera_id = [(camera['id'], key, camera['vpn_url']) for camera in data[key] if camera['name'] == name]
         if len(camera_id) == 0:
             raise self._NoDevice('No camera found with this name')
         return camera_id[0]
