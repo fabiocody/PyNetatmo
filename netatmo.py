@@ -24,12 +24,13 @@ HOME = os.getenv('HOME') + '/'
 
 class Netatmo:
 
-    def __init__(self, log_level='WARNING'):
+    def __init__(self, log_level):
         logging.basicConfig(
             format='[*] %(levelname)s : %(module)s : %(message)s',  level=getattr(logging, log_level))
         try:
             with open(HOME + '.pynetatmo.conf', 'r') as f:
                 conf = json.load(f)
+                logger.debug('Configuration loaded')
         except:
             logger.error('Could not find ~/.pynetatmo.conf')
             exit(1)
@@ -38,8 +39,10 @@ class Netatmo:
         self.access_token = auth_dict['access_token']
         self.refresh_token = auth_dict['refresh_token']
         self.scope = auth_dict['scope']
+        logger.debug('Netatmo.__init__ completed')
 
     def auth(self, user, password, client_id, client_secret, scope, verbose=False):
+        logger.debug('Authorizing...')
         payload = {
             'grant_type': 'password',
             'username': user,
@@ -58,18 +61,21 @@ class Netatmo:
                 print('Your access token is:', access_token)
                 print('Your refresh token is:', refresh_token)
                 print('Your scopes are:', scope)
+            logger.debug('Authorization completed')
             return {'access_token': access_token, 'refresh_token': refresh_token, 'scope': scope}
         except requests.exceptions.HTTPError as error:
-            print(error.response.status_code, error.response.text)
+            logger.error(error.response.status_code + ' ' + error.response.text)
 
 
 class Thermostat(Netatmo):
 
-    def __init__(self, device_id):
-        Netatmo.__init__(self)
+    def __init__(self, device_id, log_level='WARNING'):
+        Netatmo.__init__(self, log_level)
         self.device_id = device_id
+        logger.debug('Thermostat.__init__ completed')
 
     def get_thermostat_data(self):
+        logger.debug('Getting thermostat data...')
         params = {
             'access_token': self.access_token,
             'device_id': self.device_id
@@ -78,12 +84,13 @@ class Thermostat(Netatmo):
             response = requests.post(
                 'https://api.netatmo.com/api/getthermostatsdata', params=params)
             response.raise_for_status()
-            data = response.json()['body']
-            return data
+            logger.debug('Request completed')
+            return response.json()['body']
         except requests.exceptions.HTTPError as error:
-            print(error.response.status_code, error.response.text)
+            logger.error(error.response.status_code + ' ' + error.response.text)
 
     def get_module_ids(self):
+        logger.debug('Getting modules\' id...')
         data = self.get_thermostat_data()
         modules_ids = list()
         for device in data['devices']:
@@ -93,6 +100,7 @@ class Thermostat(Netatmo):
         return modules_ids
 
     def get_current_temperatures(self):
+        logger.debug('Getting current temperatures...')
         thermostat_data = self.get_thermostat_data()
         data = {'temp': [], 'setpoint_temp': []}
         for device in thermostat_data['devices']:
@@ -103,7 +111,7 @@ class Thermostat(Netatmo):
         return data
 
     def set_therm_point(self, module_id, setpoint_mode, setpoint_endtime=None, setpoint_temp=None):
-        # This is methods has not been tested yet
+        logger.debug('Setting thermal point...')
         params = {
             'access_token': self.access_token,
             'device_id': self.device_id,
@@ -118,6 +126,7 @@ class Thermostat(Netatmo):
             response = requests.post('https://api.netatmo.com/api/setthermpoint', params=params)
             response.raise_for_status()
             data = response.json()
-            print(data)
+            logger.debug('Request completed')
+            return data
         except requests.exceptions.HTTPError as error:
-            print(error.response.status_code, error.response.text)
+            logger.error(error.response.status_code + ' ' + error.response.text)
