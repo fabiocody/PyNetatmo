@@ -1,5 +1,5 @@
 # PyNetatmo [![Build Status](https://travis-ci.org/fabiocody/PyNetatmo.svg?branch=master)](https://travis-ci.org/fabiocody/PyNetatmo)
-Netatmo API wrapper written in Python
+Netatmo SmartHome API wrapper written in Python
 
 This wrapper is still under active development.
 
@@ -14,8 +14,7 @@ In order to use this API wrapper you have to put in your home directory a file n
     "scope": "SPACE-SEPARATED SCOPES (e.g. read_thermostat write_thermostat')"
 }
 ```
-Use: 'read_thermostat write_thermostat' in order to access Thermostat API
-Use: 'read_camera access_camera' in order to access Welcome API
+You can find the available scopes and more information on https://dev.netatmo.com/dev/resources/technical/reference/smarthomeapi
 
 ## Credits
 I would like to thank [Alessandro Nichelini](https://github.com/Alenichel) for writing the `Welcome` class.
