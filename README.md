@@ -14,7 +14,7 @@ In order to use this API wrapper you have to put in your home directory a file n
     "scope": "SPACE-SEPARATED SCOPES (e.g. read_thermostat write_thermostat')"
 }
 ```
-You can find the available scopes and more information on [dev.netatmo.com](https://dev.netatmo.com/dev/resources/technical/reference/smarthomeapi)
+You can find the available scopes and more information on [dev.netatmo.com](https://dev.netatmo.com/dev/resources/technical/reference/smarthomeapi).
 
 ## Credits
 I would like to thank [Alessandro Nichelini](https://github.com/Alenichel) for writing the `Welcome` class.
