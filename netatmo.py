@@ -130,15 +130,14 @@ class Thermostat(Netatmo):
 class Welcome(Netatmo):
     def __init__(self,size = 15,log_level='WARNING'):
         Netatmo.__init__(self, log_level)
-        self.size = size
-        #self.get_home_data()      # Test call to check if device_id is valid
         logger.debug('Welcome.__init__ completed')
 
-    def get_homes_data(self):
+    def get_homes_data(self, size= 15, home_id = None):
         logger.debug('Getting home data...')
         params = {
-            'access_token': self.access_token ,
-            'size':self.size
+            'access_token': self.access_token,
+            'home_id': home_id,
+            'size': size
         }
         try:
             response = requests.post('https://api.netatmo.com/api/gethomedata', params=params)
