@@ -123,4 +123,5 @@ class Thermostat(Netatmo):
             except requests.exceptions.HTTPError as error:
                 logger.error(error.response.status_code + ' ' + error.response.text)
         else:
-            raise RuntimeError('Invalid choice for setpoint_mode. Choose from ' + str(allowed_setpoint_modes))
+            raise RuntimeError('Invalid choice for setpoint_mode. Choose from ' +
+                               str(allowed_setpoint_modes))
