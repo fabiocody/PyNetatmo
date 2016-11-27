@@ -26,10 +26,4 @@ setup(
     ],
     keywords='netatmo, thermostat',
     py_modules=['netatmo']
-    #install_requires=[],
-    #entry_points={
-    #    'console_scripts': [
-    #        'netatmo=netatmo:main',
-    #    ],
-    #},
 )
