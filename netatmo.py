@@ -102,6 +102,7 @@ class Thermostat(Netatmo):
 
     def set_therm_point(self, module_id, setpoint_mode, setpoint_endtime=None, setpoint_temp=None):
         logger.debug('Setting thermal point...')
+        allowed_setpoint_modes = ['program', 'away', 'hg', 'manual', 'off', 'max']
         params = {
             'access_token': self.access_token,
             'device_id': self.device_id,
@@ -112,11 +113,14 @@ class Thermostat(Netatmo):
             params['setpoint_endtime'] = setpoint_endtime
         if setpoint_temp:
             params['setpoint_temp'] = setpoint_temp
-        try:
-            response = requests.post('https://api.netatmo.com/api/setthermpoint', params=params)
-            response.raise_for_status()
-            data = response.json()
-            logger.debug('Request completed')
-            return data
-        except requests.exceptions.HTTPError as error:
-            logger.error(error.response.status_code + ' ' + error.response.text)
+        if setpoint_mode in allowed_setpoint_modes:
+            try:
+                response = requests.post('https://api.netatmo.com/api/setthermpoint', params=params)
+                response.raise_for_status()
+                data = response.json()
+                logger.debug('Request completed')
+                return data
+            except requests.exceptions.HTTPError as error:
+                logger.error(error.response.status_code + ' ' + error.response.text)
+        else:
+            raise RuntimeError('Invalid choice for setpoint_mode. Choose from ' + str(allowed_setpoint_modes))
