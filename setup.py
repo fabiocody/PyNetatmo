@@ -11,20 +11,24 @@ try:
 except:
     long_description = ''
 
-setup(
-    name='pynetatmo',
-    version='0.0.1',
-    description='Netatmo API wrapper written in Python',
-    long_description=long_description,
-    url='https://github.com/fabiocody/PyNetatmo.git',
-    author='Fabio Codiglioni',
-    author_email='fabiocody@icloud.com',
-    license='MIT',
-    classifiers=[
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-        'Development Status :: 3 - Alpha'
-    ],
-    keywords='netatmo, thermostat',
-    py_modules=['netatmo']
-)
+try:
+    setup(
+        name='pynetatmo',
+        version='0.0.1',
+        description='Netatmo API wrapper written in Python',
+        long_description=long_description,
+        url='https://github.com/fabiocody/PyNetatmo.git',
+        author='Fabio Codiglioni',
+        author_email='fabiocody@icloud.com',
+        license='MIT',
+        classifiers=[
+            'Programming Language :: Python :: 3.4',
+            'Programming Language :: Python :: 3.5',
+            'Development Status :: 3 - Alpha'
+        ],
+        keywords='netatmo, thermostat',
+        py_modules=['netatmo']
+    )
+finally:
+    # CONFIGURATION
+    pass
