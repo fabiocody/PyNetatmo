@@ -4,7 +4,7 @@ import os
 import requests
 import json
 import logging
-
+import shutil
 
 __version__ = '0.0.1'
 
@@ -137,17 +137,20 @@ class Thermostat(Netatmo):
             logger.error('Invalid choice for setpoint_mode. Choose from ' +
                          str(allowed_setpoint_modes))
 
-
-class Welcome(Netatmo):
+class Security(Netatmo):
 
     class _NoDevice(NetatmoError):
         pass
 
-    def __init__(self, name, log_level='WARNING'):
+    def __init__(self, name, log_level ='WARNING'):
         Netatmo.__init__(self, log_level)
         self.name = name
-        self.id, self.home_id, self.vpn_url = self._get_camera_info(self.name)
-        logger.debug('Welcome.__init__ completed')
+        self.home_id, self.place = self._get_home_info()
+
+    def _get_home_info(self):
+        logger.debug('Getting home info(home_id, place)...')
+        data = self.get_home_data()
+        return (data['id'],data['place'])
 
     def get_home_data(self, size=15, home_id=None):
         logger.debug('Getting home data...')
@@ -161,21 +164,39 @@ class Welcome(Netatmo):
             response.raise_for_status()
             data = response.json()['body']['homes']
             logger.debug('Request completed')
-            return data
+            data = [h for h in data if h['name'] == self.name]
+            if len(data) == 0:
+                raise _NoDevice('No device with the name provided')
+            return data[0]
         except requests.exceptions.HTTPError as error:
             raise APIError(error.response.text)
 
-    def get_cameras_data(self):
-        logger.debug('Getting cameras data...')
+    def get_cameras(self):
         data = self.get_home_data()
-        cameras = {home['id']: home['cameras'] for home in data}
-        return cameras
+        return data['cameras']
 
-    def _get_camera_info(self, name):
-        logger.debug('Getting camera id')
-        data = self.get_cameras_data()
-        for key in data:
-            camera_id = [(camera['id'], key, camera['vpn_url']) for camera in data[key] if camera['name'] == name]
-        if len(camera_id) == 0:
-            raise self._NoDevice('No camera found with this name')
-        return camera_id[0]
+    def get_events(self, numbers_of_events):
+        data = self.get_home_data(numbers_of_events)
+        return data['events']
+
+    def get_camera_picture(self, event):
+        if type(event) is not dict:
+            raise TypeError('The input must be a dict containg an event')
+        if event['type'] not in ['movement']:
+            raise TypeError('The imput must be a movement. Only movements have related screenshot')
+
+        logger.debug('Getting event related image')
+        params = {
+            'image_id': event['snapshot']['id'],
+            'key': event['snapshot']['key']
+        }
+
+        try:
+            #to be implemented
+            response = requests.post('https://api.netatmo.com/api/getcamerapicture', params=params)
+            response.raise_for_status()
+            data = response
+            logger.debug('Request completed')
+            return data
+        except requests.exceptions.HTTPError as error:
+            raise APIError(error.response.text)
