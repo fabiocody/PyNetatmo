@@ -15,13 +15,13 @@ You can find the available scopes and more information on [dev.netatmo.com](http
 
 # Reference
 
-### `netatmo.**Netatmo**(log_level)`
+### `netatmo.Netatmo(log_level)`
 Base class used to authenticate and to set logger formatting. Every other class in this wrapper inherits from this one.
 
-### `netatmo.**NetatmoError**`
+### `netatmo.NetatmoError`
 Base exception class for this module.
 
-### `netatmo.**APIError**`
+### `netatmo.APIError`
 Inherits from netatmo.**NetatmoError**. Raised when an API error occurs.
 
 Information about other classes at **link**
