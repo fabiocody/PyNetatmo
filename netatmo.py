@@ -178,25 +178,3 @@ class Security(Netatmo):
     def get_events(self, numbers_of_events):
         data = self.get_home_data(numbers_of_events)
         return data['events']
-
-    def get_camera_picture(self, event):
-        if type(event) is not dict:
-            raise TypeError('The input must be a dict containg an event')
-        if event['type'] not in ['movement']:
-            raise TypeError('The imput must be a movement. Only movements have related screenshot')
-
-        logger.debug('Getting event related image')
-        params = {
-            'image_id': event['snapshot']['id'],
-            'key': event['snapshot']['key']
-        }
-
-        try:
-            #to be implemented
-            response = requests.post('https://api.netatmo.com/api/getcamerapicture', params=params)
-            response.raise_for_status()
-            data = response
-            logger.debug('Request completed')
-            return data
-        except requests.exceptions.HTTPError as error:
-            raise APIError(error.response.text)
