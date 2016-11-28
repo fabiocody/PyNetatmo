@@ -33,9 +33,11 @@ try:
         py_modules=['netatmo']
     )
 finally:
+    print()
     try:
         with open(path.join(HOME, '.pynetatmo.conf')) as f:
             conf = json.load(f)
+            print('Configuration file already exists')
     except FileNotFoundError:
         configure = input('Would you like to be guided through the configuration steps (otherwise you will have to create the JSON file on your own)? [y/n] ')
         if configure == 'y' or configure == 'Y':
