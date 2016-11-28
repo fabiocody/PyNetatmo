@@ -12,7 +12,7 @@ Use this method to get the full data JSON from your relay. Returns a `dict`.
 Use this method to get the module ID(s) of the thermostat(s) connected to the relay. Returns a `list`.
 
 ### `Thermostat.get_current_temperatures()`
-Use this method to get the measured and the set temperature from every thermostats connected to the relay. Returns a `dict` in the form `'temp': list(), 'setpoint_temp': list()`.
+Use this method to get the measured and the set temperature from every thermostats connected to the relay. Returns a `dict` in the form `{'temp': list(), 'setpoint_temp': list()}`.
 
 ### `Thermostat.set_therm_point(module_id, setpoint_mode, setpoint_endtime=None, setpoint_temp=None)`
 Use this method to set the thermostat.
