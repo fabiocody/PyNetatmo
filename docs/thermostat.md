@@ -18,7 +18,7 @@ Use this method to get the measured and the set temperature from every thermosta
 Use this method to set the thermostat.
 - `module_id`: MAC address of the thermostat to set.
 - `setpoint_mode`: thermostat mode. Choose from `program`, `away`, `hg` (frost guard), `manual`, `off`, `max`.
-- `setpoint_endtime`: if `setpoint_mode` is `max` or `manual`, defines the validity of period of the setpoint. Default is `None`. 
+- `setpoint_endtime`: if `setpoint_mode` is `max` or `manual`, defines the validity of period of the setpoint. Default is `None`.
 - `setpoint_temp`: if `setpoint_mode` is `manual`, the temperature setpoint in °C.
 
 Returns the response JSON.

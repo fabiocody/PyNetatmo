@@ -1,7 +1,8 @@
 # PyNetatmo
 
 ## Configuration
-In order to use this API wrapper you have to put in your home directory a file named `.pynetatmo.conf`. Here's an example of how it should look like.
+During the installation process you will be asked to enter some information, including your Netatmo account's credentials and some tokens that you can retrieve when you create an application at dev.netatmo.com.
+You can choose not to enter this information on that moment: in this case, in order to use this API wrapper, you have to put in your home directory a file named `.pynetatmo.conf`. Here's an example of how it should look like.
 ``` json
 {
     "user": "E-MAIL",
@@ -21,7 +22,7 @@ Base class used to authenticate and to set logger formatting. Every other class 
 ### `netatmo.NetatmoError`
 Base exception class for this module.
 
-### `netatmo.APIError`
+### `netatmo.APIError(message=None)`
 Inherits from netatmo.**NetatmoError**. Raised when an API error occurs.
 
-Information about other classes at **link**
+You can find information about other classes in the [respective files](https://github.com/fabiocody/PyNetatmo/tree/master/docs).
