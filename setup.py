@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 
 from setuptools import setup
-from os import path
+from os import path, getenv
+import json
+from getpass import getpass
 
-here = path.abspath(path.dirname(__file__))
+HERE = path.abspath(path.dirname(__file__))
+HOME = getenv('HOME')
 
 try:
-    with open(path.join(here, 'README.md')) as f:
+    with open(path.join(HERE, 'README.md')) as f:
         long_description = f.read()
 except:
     long_description = ''
@@ -30,5 +33,20 @@ try:
         py_modules=['netatmo']
     )
 finally:
-    # CONFIGURATION
-    pass
+    try:
+        with open(path.join(HOME, '.pynetatmo.conf')) as f:
+            conf = json.load(f)
+    except FileNotFoundError:
+        configure = input('Would you like to be guided through the configuration steps (otherwise you will have to create the JSON file on your own)? [y/n] ')
+        if configure == 'y' or configure == 'Y':
+            with open(path.join(HOME, '.pynetatmo.conf'), 'w') as f:
+                conf = dict()
+                conf['user'] = input('User: ')
+                conf['password'] = getpass()
+                conf['client_id'] = input('Client ID: ')
+                conf['client_secret'] = input('Client Secret: ')
+                conf['scope'] = input('Scope: ')
+                json.dump(conf, f, indent=4)
+                print('Configuration file created.')
+        else:
+            print('Aborted. Please reed the docs to know what to do now.')
