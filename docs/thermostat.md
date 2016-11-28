@@ -1,6 +1,6 @@
 # Netatmo Thermostat API Reference
 
-# `netatmo.Thermostat(device_id, log_level='WARNING')`
+## `netatmo.Thermostat(device_id, log_level='WARNING')`
 You have to pass the MAC address of your relay as `device_id`.
 
 ## Methods
@@ -20,4 +20,5 @@ Use this method to set the thermostat.
 - `setpoint_mode`: thermostat mode. Choose from `program`, `away`, `hg` (frost guard), `manual`, `off`, `max`.
 - `setpoint_endtime`: if `setpoint_mode` is `max` or `manual`, defines the validity of period of the setpoint. Default is `None`. 
 - `setpoint_temp`: if `setpoint_mode` is `manual`, the temperature setpoint in °C.
+
 Returns the response JSON.
