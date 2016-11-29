@@ -6,6 +6,7 @@ import json
 import logging
 import shutil
 
+
 __version__ = '0.0.1'
 
 logger = logging.getLogger('netatmo')
@@ -209,6 +210,7 @@ class Weather(Netatmo):
             return stations[name]
         else:
             return stations
+
 
 class Security(Netatmo):
 
