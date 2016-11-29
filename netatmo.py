@@ -13,19 +13,25 @@ HOME = os.getenv('HOME') + '/'
 
 
 class NetatmoError(Exception):
-    pass
+
+    def __init__(self, message=None):
+        if message:
+            Exception.__init__(self, message)
+        else:
+            Exception.__init__(self)
 
 
 class APIError(NetatmoError):
 
     def __init__(self, message=None):
-        self.message = message
+        NetatmoError.__init__(self, message)
 
 
 class ScopeError(NetatmoError):
 
-    def __init__(self, orig_class, scope):
-        self.message = scope + ' missing from ' + orig_class + ' scopes'
+    def __init__(self, scope):
+        self.message = 'Could not find \'' + scope + '\' in your scope'
+        NetatmoError.__init__(self, self.message)
 
 
 class Netatmo:
@@ -80,7 +86,7 @@ class Thermostat(Netatmo):
         self.class_scope = ['read_thermostat', 'write_thermostat']
         for scope in self.class_scope:
             if scope not in self.scope:
-                raise ScopeError('Thermostat', scope)
+                raise ScopeError(scope)
         self.device_id = device_id
         self.get_thermostats_data()      # Test call to check if device_id is valid
         logger.debug('Thermostat.__init__ completed')
@@ -149,15 +155,15 @@ class Thermostat(Netatmo):
 
 
 class Weather(Netatmo):
-    
+
     def __init__(self, device_id=None, log_level='WARNING'):
         Netatmo.__init__(self, log_level)
         self.class_scope = ['read_station']
         for scope in self.class_scope:
             if scope not in self.scope:
-                raise ScopeError('Weather', scope)
+                raise ScopeError(scope)
         self.device_id = device_id
-        
+
     def get_stations_data(self, get_favorites=False):
         logger.debug('Getting stations\' data...')
         params = {
@@ -229,11 +235,11 @@ class Security(Netatmo):
             'key': event['snapshot']['key']
         }
         try:
-            #to be implemented
+            # to be implemented
             response = requests.post('https://api.netatmo.com/api/getcamerapicture', params=params)
             response.raise_for_status()
             data = response
             logger.debug('Request completed')
             return data
         except requests.exceptions.HTTPError as error:
-            raise APIError(error.response.text)    
+            raise APIError(error.response.text)
