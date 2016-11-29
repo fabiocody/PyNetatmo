@@ -142,15 +142,15 @@ class Security(Netatmo):
     class _NoDevice(NetatmoError):
         pass
 
-    def __init__(self, name, log_level ='WARNING'):
+    def __init__(self, name, log_level='WARNING'):
         Netatmo.__init__(self, log_level)
         self.name = name
         self.home_id, self.place = self._get_home_info()
 
     def _get_home_info(self):
-        logger.debug('Getting home info(home_id, place)...')
+        logger.debug('Getting home info (home_id, place)...')
         data = self.get_home_data()
-        return (data['id'],data['place'])
+        return (data['id'], data['place'])
 
     def get_home_data(self, size=15, home_id=None):
         logger.debug('Getting home data...')
@@ -183,14 +183,12 @@ class Security(Netatmo):
         if type(event) is not dict:
             raise TypeError('The input must be a dict containg an event')
         if event['type'] not in ['movement']:
-            raise TypeError('The imput must be a movement. Only movements have related screenshot')
-
-        logger.debug('Getting event related image')
+            raise TypeError('The input must be a movement. Only movements have related screenshot')
+        logger.debug('Getting event related image...')
         params = {
             'image_id': event['snapshot']['id'],
             'key': event['snapshot']['key']
         }
-
         try:
             #to be implemented
             response = requests.post('https://api.netatmo.com/api/getcamerapicture', params=params)
