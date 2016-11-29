@@ -5,6 +5,8 @@ import requests
 import json
 import logging
 import shutil
+from io import BytesIO
+from PIL import Image
 
 
 __version__ = '0.0.1'
@@ -234,6 +236,10 @@ class Security(Netatmo):
 
     def __init__(self, name, log_level='WARNING'):
         Netatmo.__init__(self, log_level)
+        self.class_scope = ['read_camera', 'access_camera']
+        for scope in self.class_scope:
+            if scope not in self.scope:
+                raise ScopeError(scope)
         self.name = name
         self.home_id, self.place = self._get_home_info()
 
@@ -265,26 +271,26 @@ class Security(Netatmo):
         data = self.get_home_data()
         return data['cameras']
 
-    def get_events(self, numbers_of_events):
+    def get_events(self, numbers_of_events=15):
         data = self.get_home_data(numbers_of_events)
         return data['events']
 
-    def get_camera_picture(self, event):
+    def get_camera_picture(self, event, visualize=False):
         if type(event) is not dict:
             raise TypeError('The input must be a dict containg an event')
         if event['type'] not in ['movement']:
             raise TypeError('The input must be a movement. Only movements have related screenshot')
         logger.debug('Getting event related image...')
-        params = {
-            'image_id': event['snapshot']['id'],
-            'key': event['snapshot']['key']
-        }
         try:
             # to be implemented
-            response = requests.post('https://api.netatmo.com/api/getcamerapicture', params=params)
+            BASE_URL = 'https://api.netatmo.com/api/getcamerapicture?'
+            URL = BASE_URL + 'image_id=' + str(event['snapshot']['id']) + '&key=' + str(event['snapshot']['key'])
+            response = requests.get(URL)
             response.raise_for_status()
-            data = response
+            img = Image.open(BytesIO(response.content))
             logger.debug('Request completed')
-            return data
+            if visualize == True:
+                Image._show(img)
+            return img
         except requests.exceptions.HTTPError as error:
             raise APIError(error.response.text)
