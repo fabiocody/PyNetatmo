@@ -137,6 +137,11 @@ class Thermostat(Netatmo):
             logger.error('Invalid choice for setpoint_mode. Choose from ' +
                          str(allowed_setpoint_modes))
 
+
+class Weather(Netatmo):
+    pass
+
+
 class Security(Netatmo):
 
     class _NoDevice(NetatmoError):
