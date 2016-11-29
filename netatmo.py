@@ -165,16 +165,9 @@ class Weather(Netatmo):
                 raise ScopeError(scope)
         self.device_id = device_id
         self.get_favorites = get_favorites
-        self.stations = list()
-        self.my_stations = list()
-        for device in self.get_stations_data()['body']['devices']:
-            self.stations.append(device)
-        for device in self.stations:
-            try:
-                if device['_id'] == self.device_id:
-                    self.my_stations.append(device)
-            except:
-                pass
+        self.stations = [Station(device) for device in self.get_stations_data()['body']['devices']]
+        self.my_stations = [station for station in self.stations if station.id == self.device_id]
+        logger.debug('Weather.__init__ completed')
 
     def get_stations_data(self):
         logger.debug('Getting stations\' data...')
@@ -195,14 +188,14 @@ class Weather(Netatmo):
 
     def get_station_from_id(self, ID):
         for device in self.stations:
-            if device['_id'] == ID:
+            if device.id == ID:
                 return device
         return None
 
     def get_stations_from_name(self, name):
         stations = dict()
         for device in self.stations:
-            if device['station_name'] == name:
+            if device.name == name:
                 stations[name] = device
         if len(stations) == 0:
             return None
@@ -210,6 +203,28 @@ class Weather(Netatmo):
             return stations[name]
         else:
             return stations
+
+
+class Station(Netatmo):
+
+    def __init__(self, raw_data, log_level='WARNING'):
+        Netatmo.__init__(self, log_level)
+        self.raw_data = raw_data
+        self.name = raw_data['station_name']
+        self.id = raw_data['_id']
+        self.type = [t for module in raw_data['modules'] for t in module['data_type']]
+        self.modules = self.raw_data['modules']
+        for module in self.modules:
+            if 'Temperature' in module['dashboard_data']:
+                self.temperature = module['dashboard_data']['Temperature']
+            if 'Humidity' in module['dashboard_data']:
+                self.humidity = module['dashboard_data']['Humidity']
+            if 'Rain' in module['dashboard_data']:
+                self.rain = module['dashboard_data']['Rain']
+            if 'WindStrength' in module['dashboard_data']:
+                self.wind_strength = module['dashboard_data']['WindStrength']
+                self.wind_angle = module['dashboard_data']['WindAngle']
+        logger.debug('Station.__init__ completed')
 
 
 class Security(Netatmo):
