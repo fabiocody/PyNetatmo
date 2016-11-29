@@ -156,19 +156,30 @@ class Thermostat(Netatmo):
 
 class Weather(Netatmo):
 
-    def __init__(self, device_id=None, log_level='WARNING'):
+    def __init__(self, device_id=None, get_favorites=False, log_level='WARNING'):
         Netatmo.__init__(self, log_level)
         self.class_scope = ['read_station']
         for scope in self.class_scope:
             if scope not in self.scope:
                 raise ScopeError(scope)
         self.device_id = device_id
+        self.get_favorites = get_favorites
+        self.stations = list()
+        self.my_stations = list()
+        for device in self.get_stations_data()['body']['devices']:
+            self.stations.append(device)
+        for device in self.stations:
+            try:
+                if device['_id'] == self.device_id:
+                    self.my_stations.append(device)
+            except:
+                pass
 
-    def get_stations_data(self, get_favorites=False):
+    def get_stations_data(self):
         logger.debug('Getting stations\' data...')
         params = {
             'access_token': self.access_token,
-            'get_favorites': str(get_favorites).lower()
+            'get_favorites': str(self.get_favorites).lower()
         }
         if self.device_id:
             params['device_id'] = self.device_id
@@ -181,6 +192,23 @@ class Weather(Netatmo):
         except requests.exceptions.HTTPError as error:
             raise APIError(error.response.text)
 
+    def get_station_from_id(self, ID):
+        for device in self.stations:
+            if device['_id'] == ID:
+                return device
+        return None
+
+    def get_stations_from_name(self, name):
+        stations = dict()
+        for device in self.stations:
+            if device['station_name'] == name:
+                stations[name] = device
+        if len(stations) == 0:
+            return None
+        elif len(stations) == 1:
+            return stations[name]
+        else:
+            return stations
 
 class Security(Netatmo):
 
