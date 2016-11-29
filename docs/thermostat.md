@@ -1,4 +1,4 @@
-# Netatmo Thermostat API Reference
+# PyNetatmo Thermostat API Reference
 
 ## `netatmo.Thermostat(device_id, log_level='WARNING')`
 You have to pass the MAC address of your relay as `device_id`.
