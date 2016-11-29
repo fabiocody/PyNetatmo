@@ -22,6 +22,12 @@ class APIError(NetatmoError):
         self.message = message
 
 
+class ScopeError(NetatmoError):
+
+    def __init__(self, orig_class, scope):
+        self.message = scope + ' missing from ' + orig_class + ' scopes'
+
+
 class Netatmo:
 
     def __init__(self, log_level):
@@ -71,6 +77,10 @@ class Thermostat(Netatmo):
 
     def __init__(self, device_id, log_level='WARNING'):
         Netatmo.__init__(self, log_level)
+        self.class_scope = ['read_thermostat', 'write_thermostat']
+        for scope in self.class_scope:
+            if scope not in self.scope:
+                raise ScopeError('Thermostat', scope)
         self.device_id = device_id
         self.get_thermostats_data()      # Test call to check if device_id is valid
         logger.debug('Thermostat.__init__ completed')
@@ -139,7 +149,31 @@ class Thermostat(Netatmo):
 
 
 class Weather(Netatmo):
-    pass
+    
+    def __init__(self, device_id=None, log_level='WARNING'):
+        Netatmo.__init__(self, log_level)
+        self.class_scope = ['read_station']
+        for scope in self.class_scope:
+            if scope not in self.scope:
+                raise ScopeError('Weather', scope)
+        self.device_id = device_id
+        
+    def get_stations_data(self, get_favorites=False):
+        logger.debug('Getting stations\' data...')
+        params = {
+            'access_token': self.access_token,
+            'get_favorites': str(get_favorites).lower()
+        }
+        if self.device_id:
+            params['device_id'] = self.device_id
+        try:
+            response = requests.post('https://api.netatmo.com/api/getstationsdata', params=params)
+            response.raise_for_status()
+            data = response.json()
+            logger.debug('Request completed')
+            return data
+        except requests.exceptions.HTTPError as error:
+            raise APIError(error.response.text)
 
 
 class Security(Netatmo):
