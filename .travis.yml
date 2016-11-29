@@ -3,7 +3,7 @@ python:
     - "3.4"
     - "3.5"
     - "nightly"
-install: "pip3 install pylint"
+install: "pip3 install pylint pillow"
 script: pylint *.py -E
 
 deploy:

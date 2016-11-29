@@ -4,7 +4,6 @@ import os
 import requests
 import json
 import logging
-import shutil
 from io import BytesIO
 from PIL import Image
 

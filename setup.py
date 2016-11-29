@@ -30,7 +30,8 @@ try:
             'Development Status :: 3 - Alpha'
         ],
         keywords='netatmo, thermostat',
-        py_modules=['netatmo']
+        py_modules=['netatmo'],
+        install_requires=['pillow']
     )
 finally:
     print()
