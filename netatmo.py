@@ -277,7 +277,7 @@ class Security(Netatmo):
     def get_camera_picture(self, event, visualize=False):
         if type(event) is not dict:
             raise TypeError('The input must be a dict containg an event')
-        if event['type'] not in ['movement']:
+        if event['type'] not in ['movement', 'person']:
             raise TypeError('The input must be a movement. Only movements have related screenshot')
         logger.debug('Getting event related image...')
         try:
@@ -289,7 +289,7 @@ class Security(Netatmo):
             img = Image.open(BytesIO(response.content))
             logger.debug('Request completed')
             if visualize == True:
-                Image._show(img)
+                img.show()
             return img
         except requests.exceptions.HTTPError as error:
             raise APIError(error.response.text)
