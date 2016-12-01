@@ -22,3 +22,6 @@ Use this method to set the thermostat.
 - `setpoint_temp`: if `setpoint_mode` is `manual`, the temperature setpoint in °C.
 
 It returns the response JSON.
+
+### `Thermosta.switch_schedule(module_id, schedule_id)`
+Use this method to switch `module_id`'s current schedule with the one specified by `schedule_id`

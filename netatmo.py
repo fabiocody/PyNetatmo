@@ -36,20 +36,33 @@ class ScopeError(NetatmoError):
         NetatmoError.__init__(self, self.message)
 
 
-class Netatmo:
+class ConfigError(NetatmoError):
+
+    def __init__(self, error):
+        if error == 'file':
+            self.message = 'Could not find .pynetatmo.conf in your home directory'
+        elif error == 'key':
+            self.message = 'Your configuration file appears to be invalid. Please check {}.pynetatmo.conf'.format(HOME)
+        else:
+            self.message = None
+        NetatmoError.__init__(self, self.message)
+
+
+class Netatmo(object):
 
     def __init__(self, log_level):
-        logging.basicConfig(
-            format='[*] %(levelname)s : %(module)s : %(message)s',  level=getattr(logging, log_level))
+        logging.basicConfig(format='[*] %(levelname)s : %(module)s : %(message)s',  level=getattr(logging, log_level))
         try:
             with open(HOME + '.pynetatmo.conf', 'r') as f:
                 conf = json.load(f)
                 logger.debug('Configuration loaded')
         except FileNotFoundError:
-            logger.error('Could not find ~/.pynetatmo.conf')
-            exit(1)
-        auth_dict = self.auth(conf['user'], conf['password'], conf[
-                              'client_id'], conf['client_secret'], conf['scope'])
+            raise ConfigError('file')
+        try:
+            auth_dict = self.auth(conf['user'], conf['password'],
+                                  conf['client_id'], conf['client_secret'], conf['scope'])
+        except KeyError:
+            raise ConfigError('key')
         self.access_token = auth_dict['access_token']
         self.refresh_token = auth_dict['refresh_token']
         self.scope = auth_dict['scope']
@@ -100,8 +113,7 @@ class Thermostat(Netatmo):
             'device_id': self.device_id
         }
         try:
-            response = requests.post(
-                'https://api.netatmo.com/api/getthermostatsdata', params=params)
+            response = requests.post('https://api.netatmo.com/api/getthermostatsdata', params=params)
             response.raise_for_status()
             logger.debug('Request completed')
             return response.json()['body']
@@ -110,9 +122,8 @@ class Thermostat(Netatmo):
 
     def get_module_ids(self):
         logger.debug('Getting modules\' id...')
-        data = self.get_thermostats_data()
         modules_ids = list()
-        for device in data['devices']:
+        for device in self.get_thermostats_data()['devices']:
             if device['_id'] == self.device_id:
                 for module in device['modules']:
                     modules_ids.append(module['_id'])
@@ -120,9 +131,8 @@ class Thermostat(Netatmo):
 
     def get_current_temperatures(self):
         logger.debug('Getting current temperatures...')
-        thermostat_data = self.get_thermostats_data()
         data = {'temp': [], 'setpoint_temp': []}
-        for device in thermostat_data['devices']:
+        for device in self.get_thermostats_data()['devices']:
             if device['_id'] == self.device_id:
                 for module in device['modules']:
                     data['temp'].append(module['measured']['temperature'])
@@ -146,14 +156,29 @@ class Thermostat(Netatmo):
             try:
                 response = requests.post('https://api.netatmo.com/api/setthermpoint', params=params)
                 response.raise_for_status()
-                data = response.json()
                 logger.debug('Request completed')
-                return data
             except requests.exceptions.HTTPError as error:
                 raise APIError(error.response.text)
         else:
             logger.error('Invalid choice for setpoint_mode. Choose from ' +
                          str(allowed_setpoint_modes))
+            return False
+
+    def switch_schedule(self, module_id, schedule_id):
+        logger.debug('Switching schedule...')
+        params = {
+            'access_token': self.access_token,
+            'device_id': self.device_id,
+            'module_id': module_id,
+            'schedule_id': schedule_id
+        }
+        try:
+            response = requests.get('https://api.netatmo.com/api/Switchschedule', params=params)
+            response.raise_for_status()
+            logger.debug('Request completed')
+            return response.json()['body']
+        except requests.exceptions.HTTPError as error:
+            raise APIError(error.response.text)
 
 
 class Weather(Netatmo):
@@ -181,9 +206,8 @@ class Weather(Netatmo):
         try:
             response = requests.post('https://api.netatmo.com/api/getstationsdata', params=params)
             response.raise_for_status()
-            data = response.json()
             logger.debug('Request completed')
-            return data
+            return response.json()
         except requests.exceptions.HTTPError as error:
             raise APIError(error.response.text)
 
@@ -205,7 +229,7 @@ class Weather(Netatmo):
         else:
             return stations
 
-    class Station:
+    class Station(object):
         def __init__(self, raw_data):
             self.raw_data = raw_data
             self.name = raw_data['station_name']
@@ -264,14 +288,12 @@ class Security(Netatmo):
             raise APIError(error.response.text)
 
     def get_cameras(self):
-        data = self.get_home_data()
-        return data['cameras']
+        return self.get_home_data()['cameras']
 
     def get_events(self, numbers_of_events=15):
-        data = self.get_home_data(numbers_of_events)
-        return data['events']
+        return self.get_home_data(numbers_of_events)['events']
 
-    def get_camera_picture(self, event, visualize=False):
+    def get_camera_picture(self, event, show=False):
         if type(event) is not dict:
             raise TypeError('The input must be a dict containg an event')
         if event['type'] not in ['movement', 'person']:
@@ -279,13 +301,14 @@ class Security(Netatmo):
         logger.debug('Getting event related image...')
         try:
             # to be implemented
-            BASE_URL = 'https://api.netatmo.com/api/getcamerapicture?'
-            URL = BASE_URL + 'image_id=' + str(event['snapshot']['id']) + '&key=' + str(event['snapshot']['key'])
-            response = requests.get(URL)
+            #base_url = 'https://api.netatmo.com/api/getcamerapicture?'
+            base_url = 'https://api.netatmo.com/api/getcamerapicture?image_id={}&key=}{}'
+            #url = base_url + 'image_id=' + str(event['snapshot']['id']) + '&key=' + str(event['snapshot']['id']))
+            response = requests.get(base_url.format(str(event['snapshot']['id']), str(event['snapshot']['id'])))
             response.raise_for_status()
             img = Image.open(BytesIO(response.content))
             logger.debug('Request completed')
-            if visualize == True:
+            if show == True:
                 img.show()
             return img
         except requests.exceptions.HTTPError as error:
