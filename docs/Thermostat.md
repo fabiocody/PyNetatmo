@@ -1,6 +1,6 @@
 # PyNetatmo Thermostat API Reference
 
-## `netatmo.Thermostat(device_id, log_level='WARNING')`
+## `class netatmo.Thermostat(device_id, log_level='WARNING')`
 You have to pass the MAC address of your relay as `device_id`.
 
 ## Methods
@@ -21,4 +21,4 @@ Use this method to set the thermostat.
 - `setpoint_endtime`: if `setpoint_mode` is `max` or `manual`, defines the validity of period of the setpoint. Default is `None`.
 - `setpoint_temp`: if `setpoint_mode` is `manual`, the temperature setpoint in °C.
 
-Returns the response JSON.
+It returns the response JSON.
