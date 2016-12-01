@@ -253,6 +253,17 @@ class Security(Netatmo):
     class _NoDevice(NetatmoError):
         pass
 
+    class Camera():
+
+        def __init__(self, source_dictionary):
+            self.__dict__.update(source_dictionary)
+
+        def __str__(self):
+            string = '••Netatmo Camera Object••\n\n'
+            for k in self.__dict__.keys():
+                string += ((k + '  ::  ' + str(self.__dict__[k]) + '\n'))
+            return string
+
     def __init__(self, name, log_level='WARNING'):
         Netatmo.__init__(self, log_level)
         self.class_scope = ['read_camera', 'access_camera']
@@ -287,7 +298,7 @@ class Security(Netatmo):
             raise APIError(error.response.text)
 
     def get_cameras(self):
-        return self.get_home_data()['cameras']
+        return [ self.Camera(c) for c in self.get_home_data()['cameras']]
 
     def get_events(self, numbers_of_events=15):
         return self.get_home_data(numbers_of_events)['events']
@@ -299,10 +310,7 @@ class Security(Netatmo):
             raise TypeError('The input must be a movement. Only movements have related screenshot')
         logger.debug('Getting event related image...')
         try:
-            # to be implemented
-            #base_url = 'https://api.netatmo.com/api/getcamerapicture?'
             base_url = 'https://api.netatmo.com/api/getcamerapicture?image_id={}&key=}{}'
-            #url = base_url + 'image_id=' + str(event['snapshot']['id']) + '&key=' + str(event['snapshot']['id']))
             response = requests.get(base_url.format(str(event['snapshot']['id']), str(event['snapshot']['id'])))
             response.raise_for_status()
             img = Image.open(BytesIO(response.content))
