@@ -173,10 +173,9 @@ class Thermostat(Netatmo):
             'schedule_id': schedule_id
         }
         try:
-            response = requests.get('https://api.netatmo.com/api/Switchschedule', params=params)
+            response = requests.get('https://api.netatmo.com/api/switchschedule', params=params)
             response.raise_for_status()
             logger.debug('Request completed')
-            return response.json()['body']
         except requests.exceptions.HTTPError as error:
             raise APIError(error.response.text)
 
