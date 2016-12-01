@@ -254,12 +254,28 @@ class Security(Netatmo):
         pass
 
     class Camera():
-
         def __init__(self, source_dictionary):
             self.__dict__.update(source_dictionary)
 
         def __str__(self):
             string = '••Netatmo Camera Object••\n\n'
+            for k in self.__dict__.keys():
+                string += ((k + '  ::  ' + str(self.__dict__[k]) + '\n'))
+            return string
+    class Person():
+        def __init__(self, source_dictionary):
+            self.__dict__.update(source_dictionary)
+        def __str__(self):
+            string = '••Netatmo Person Object••\n\n'
+            for k in self.__dict__.keys():
+                string += ((k + '  ::  ' + str(self.__dict__[k]) + '\n'))
+            return string
+
+    class Event():
+        def __init__(self, source_dictionary):
+            self.__dict__.update(source_dictionary)
+        def __str__(self):
+            string = '••Netatmo Event Object••\n\n'
             for k in self.__dict__.keys():
                 string += ((k + '  ::  ' + str(self.__dict__[k]) + '\n'))
             return string
@@ -301,17 +317,26 @@ class Security(Netatmo):
         return [ self.Camera(c) for c in self.get_home_data()['cameras']]
 
     def get_events(self, numbers_of_events=15):
-        return self.get_home_data(numbers_of_events)['events']
+        return [self.Event(e) for e in self.get_home_data(numbers_of_events)['events']]
+
+    def get_persons(self):
+        return [ self.Person(c) for c in self.get_home_data()['persons']]
 
     def get_camera_picture(self, event, show=False):
-        if type(event) is not dict:
-            raise TypeError('The input must be a dict containg an event')
-        if event['type'] not in ['movement', 'person']:
-            raise TypeError('The input must be a movement. Only movements have related screenshot')
+        if type(event) == Security.Event:
+            if event.type not in ['movement', 'person']:
+                raise TypeError('The input event must be a movement or a \'person seen event\'. Only these have related screenshots')
+        if type(event) not in [Security.Event, Security.Person]:
+            raise TypeError('The input must be an event or a person object')
+
         logger.debug('Getting event related image...')
         try:
-            base_url = 'https://api.netatmo.com/api/getcamerapicture?image_id={}&key=}{}'
-            response = requests.get(base_url.format(str(event['snapshot']['id']), str(event['snapshot']['id'])))
+            base_url = 'https://api.netatmo.com/api/getcamerapicture?'
+            try:
+                url = base_url + 'image_id=' + str(event.snapshot['id']) + '&key=' + str(event.snapshot['key'])
+            except AttributeError:
+                url = base_url + 'image_id=' + str(event.face['id']) + '&key=' + str(event.face['key'])
+            response = requests.get(url)
             response.raise_for_status()
             img = Image.open(BytesIO(response.content))
             logger.debug('Request completed')
