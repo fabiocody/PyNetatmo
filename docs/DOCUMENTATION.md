@@ -23,12 +23,12 @@ Base class used to authenticate and to set logger formatting. Every other "main"
 Base exception class for this module.
 
 ### `netatmo.APIError(message=None)`
-Inherits from `netatmo.**NetatmoError**`. Raised when an API error occurs.
+Inherits from `netatmo.NetatmoError`. Raised when an API error occurs.
 
 ### `netatmo.ScopeError(scope)`
-Inherits from `netatmo.**NetatmoError**`. Raised when a scope required to use a class is not found in the configuration.
+Inherits from `netatmo.NetatmoError`. Raised when a scope required to use a class is not found in the configuration.
 
 ### `netatmo.ConfigError(error)`
-Inherits from `netatmo.**NetatmoError`. Raised when the configuration file is not found or when the latter is invalid.
+Inherits from `netatmo.NetatmoError`. Raised when the configuration file is not found or when the latter is invalid.
 
 You can find information about other classes in the [respective files](https://github.com/fabiocody/PyNetatmo/tree/master/docs).
