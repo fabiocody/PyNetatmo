@@ -16,14 +16,14 @@ Use this method to return all the stations identified by `name`. Returns a `dict
 
 ### `class Weather.Station(raw_data)`
 #### Attributes
-- `raw_data`: complete dict returned by `get_station_from_id`
-- `name`: station's name
-- `id`: station's ID (MAC address)
-- `type`: list of station's data types
-- `modules`: list of modules installed in the station
-- `temperature`: temperature measured by the station
-- `humidity`: humidity measured by the station
-- `rain`: rain measured by the station
-- `wind_strength`: wind strength measured by the station
-- `wind angle`: wind angle measured by the station
+- `raw_data`: complete dict returned by `get_station_from_id`.
+- `name`: station's name.
+- `id`: station's ID (MAC address).
+- `type`: list of station's data types.
+- `modules`: list of modules installed in the station.
+- `temperature`: temperature measured by the station.
+- `humidity`: humidity measured by the station.
+- `rain`: rain measured by the station.
+- `wind_strength`: wind strength measured by the station.
+- `wind angle`: wind angle measured by the station.
 Obviously, a measured attribute is present only if the station can measure it.
