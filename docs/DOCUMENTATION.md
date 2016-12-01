@@ -17,12 +17,18 @@ You can find the available scopes and more information on [dev.netatmo.com](http
 # Reference
 
 ### `netatmo.Netatmo(log_level)`
-Base class used to authenticate and to set logger formatting. Every other class in this wrapper inherits from this one.
+Base class used to authenticate and to set logger formatting. Every other "main" class in this wrapper inherits from this one.
 
-### `netatmo.NetatmoError`
+### `netatmo.NetatmoError(message=None)`
 Base exception class for this module.
 
 ### `netatmo.APIError(message=None)`
-Inherits from netatmo.**NetatmoError**. Raised when an API error occurs.
+Inherits from `netatmo.**NetatmoError**`. Raised when an API error occurs.
+
+### `netatmo.ScopeError(scope)`
+Inherits from `netatmo.**NetatmoError**`. Raised when a scope required to use a class is not found in the configuration.
+
+### `netatmo.ConfigError(error)`
+Inherits from `netatmo.**NetatmoError`. Raised when the configuration file is not found or when the latter is invalid.
 
 You can find information about other classes in the [respective files](https://github.com/fabiocody/PyNetatmo/tree/master/docs).
