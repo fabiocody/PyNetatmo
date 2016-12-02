@@ -81,6 +81,12 @@ class Netatmo(object):
         self.refresh_token = auth_dict['refresh_token']
         self.scope = auth_dict['scope']
         logger.debug('Netatmo.__init__ completed')
+    
+    def __str__(self):
+        string = '••Netatmo Object••\n\n'
+        for k in self.__dict__:
+            string += k + '  ::  ' + str(self.__dict__[k]) + '\n'
+        return string
 
     def auth(self, user, password, client_id, client_secret, scope, verbose=False):
         logger.debug('Authorizing...')
@@ -126,6 +132,13 @@ class Thermostat(Netatmo):
         self.device_id = device_id
         self.get_thermostats_data()      # Test call to check if device_id is valid
         logger.debug('Thermostat.__init__ completed')
+
+    def __str__(self):
+        string = '••Netatmo Thermostat Object••\n\n'
+        for k in self.__dict__:
+            string += k + '  ::  ' + str(self.__dict__[k]) + '\n'
+        return string
+
 
     def get_thermostats_data(self):
         logger.debug('Getting thermostat data...')
@@ -221,6 +234,13 @@ class Weather(Netatmo):
         self.stations = [self.Station(device) for device in self.get_stations_data()['body']['devices']]
         self.my_stations = [station for station in self.stations if station.id == self.device_id]
         logger.debug('Weather.__init__ completed')
+        
+    def __str__(self):
+        string = '••Netatmo Weather Object••\n\n'
+        for k in self.__dict__:
+            string += k + '  ::  ' + str(self.__dict__[k]) + '\n'
+        return string
+
 
     def get_stations_data(self):
         logger.debug('Getting stations\' data...')
@@ -256,7 +276,9 @@ class Weather(Netatmo):
         else:
             return stations
 
+
     class Station(object):
+    
         def __init__(self, raw_data):
             self.raw_data = raw_data
             self.name = raw_data['station_name']
@@ -274,6 +296,14 @@ class Weather(Netatmo):
                     self.wind_strength = module['dashboard_data']['WindStrength']
                     self.wind_angle = module['dashboard_data']['WindAngle']
             logger.debug('Station.__init__ completed')
+
+        def __str__(self):
+            string = '••Netatmo Weather.Station Object••\n\n'
+            for k in self.__dict__:
+                if k != raw_data:
+                    string += k + '  ::  ' + str(self.__dict__[k]) + '\n'
+            return string
+
 
 
 
@@ -297,9 +327,9 @@ class Security(Netatmo):
             self.__dict__.update(source_dictionary)
 
         def __str__(self):
-            string = '••Netatmo Camera Object••\n\n'
-            for k in self.__dict__.keys():
-                string += ((k + '  ::  ' + str(self.__dict__[k]) + '\n'))
+            string = '••Netatmo Secutiry.Camera Object••\n\n'
+            for k in self.__dict__:
+                string += k + '  ::  ' + str(self.__dict__[k]) + '\n'
             return string
             
             
@@ -309,9 +339,9 @@ class Security(Netatmo):
             self.__dict__.update(source_dictionary)
             
         def __str__(self):
-            string = '••Netatmo Person Object••\n\n'
-            for k in self.__dict__.keys():
-                string += ((k + '  ::  ' + str(self.__dict__[k]) + '\n'))
+            string = '••Netatmo Security.Person Object••\n\n'
+            for k in self.__dict__:
+                string += k + '  ::  ' + str(self.__dict__[k]) + '\n'
             return string
 
 
@@ -321,9 +351,9 @@ class Security(Netatmo):
             self.__dict__.update(source_dictionary)
             
         def __str__(self):
-            string = '••Netatmo Event Object••\n\n'
-            for k in self.__dict__.keys():
-                string += ((k + '  ::  ' + str(self.__dict__[k]) + '\n'))
+            string = '••Netatmo Security.Event Object••\n\n'
+            for k in self.__dict__:
+                string += k + '  ::  ' + str(self.__dict__[k]) + '\n'
             return string
 
 
@@ -335,6 +365,13 @@ class Security(Netatmo):
                 raise ScopeError(scope)
         self.name = name
         self.home_id, self.place = self._get_home_info()
+    
+    def __str__(self):
+        string = '••Netatmo Security Object••\n\n'
+        for k in self.__dict__:
+            string += k + '  ::  ' + str(self.__dict__[k]) + '\n'
+        return string
+
 
     def _get_home_info(self):
         logger.debug('Getting home info (home_id, place)...')
