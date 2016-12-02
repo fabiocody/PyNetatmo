@@ -300,7 +300,7 @@ class Weather(Netatmo):
         def __str__(self):
             string = '••Netatmo Weather.Station Object••\n\n'
             for k in self.__dict__:
-                if k != raw_data:
+                if k != 'raw_data':
                     string += k + '  ::  ' + str(self.__dict__[k]) + '\n'
             return string
 
