@@ -6,7 +6,7 @@ You have to pass the MAC address of your relay as `device_id`.
 ## Methods
 
 ### `Thermostat.get_thermostats_data()`
-Use this method to get the full data JSON from your relay. Returns a `dict`.
+API call. Use this method to get the full data JSON from your relay. Returns a `dict`.
 
 ### `Thermostat.get_module_ids()`
 Use this method to get the module ID(s) of the thermostat(s) connected to the relay. Returns a `list`.
@@ -15,7 +15,7 @@ Use this method to get the module ID(s) of the thermostat(s) connected to the re
 Use this method to get the measured and the set temperature from every thermostats connected to the relay. Returns a `dict` in the form `{'temp': [LIST_OF_TEMPERATURES], 'setpoint_temp': [LIST_OF_TEMPERATURES]}`.
 
 ### `Thermostat.set_therm_point(module_id, setpoint_mode, setpoint_endtime=None, setpoint_temp=None)`
-Use this method to set the thermostat.
+API call. Use this method to set the thermostat.
 - `module_id`: MAC address of the thermostat to set.
 - `setpoint_mode`: thermostat mode. Choose from `program`, `away`, `hg` (frost guard), `manual`, `off`, `max`.
 - `setpoint_endtime`: if `setpoint_mode` is `max` or `manual`, defines the validity of period of the setpoint. Default is `None`.
@@ -24,10 +24,10 @@ Use this method to set the thermostat.
 It returns the response JSON.
 
 ### `Thermostat.switch_schedule(module_id, schedule_id)`
-Use this method to switch `module_id`'s current schedule with the one specified by `schedule_id`.
+API call. Use this method to switch `module_id`'s current schedule with the one specified by `schedule_id`.
 
 ### `Thermostat.create_new_schedule(module_id, zones, timetable, name)`
-Use this method to create a new schedule to be stored in the backup list. You can find further information about this method at [dev.netatmo.com](https://dev.netatmo.com/dev/resources/technical/reference/thermostat/createnewschedule).
+API call. Use this method to create a new schedule to be stored in the backup list. You can find further information about this method at [dev.netatmo.com](https://dev.netatmo.com/dev/resources/technical/reference/thermostat/createnewschedule).
 
 ### `Thermostat.sync_schedule(module_id, zones, timetable)`
-Use this method to change the Thermostat weekly schedule. You can find further information about this method at [dev.netatmo.com](https://dev.netatmo.com/dev/resources/technical/reference/thermostat/syncschedule).
+API call. Use this method to change the Thermostat weekly schedule. You can find further information about this method at [dev.netatmo.com](https://dev.netatmo.com/dev/resources/technical/reference/thermostat/syncschedule).

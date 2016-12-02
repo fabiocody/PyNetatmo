@@ -6,7 +6,7 @@ If you have a Netatmo Weather Station, you can pass its MAC address as `device_i
 ## Methods
 
 ### `Weather.get_stations_data()`
-Use this method to get the full data JSON from the weather station(s). Returns a `dict`.
+API call. Use this method to get the full data JSON from the weather station(s). Returns a `dict`.
 
 ### `Weather.get_station_from_id(ID)`
 Use this method to return the station identified by `ID`.
