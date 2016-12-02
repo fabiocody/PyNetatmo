@@ -286,7 +286,10 @@ class Weather(Netatmo):
 class Security(Netatmo):
 
     class _NoDevice(NetatmoError):
-        pass
+    
+        def __init__(self, message=None):
+            NetatmoError.__init__(self, message)
+
 
     class Camera(object):
     
@@ -299,6 +302,7 @@ class Security(Netatmo):
                 string += ((k + '  ::  ' + str(self.__dict__[k]) + '\n'))
             return string
             
+            
     class Person(object):
     
         def __init__(self, source_dictionary):
@@ -310,6 +314,7 @@ class Security(Netatmo):
                 string += ((k + '  ::  ' + str(self.__dict__[k]) + '\n'))
             return string
 
+
     class Event(object):
     
         def __init__(self, source_dictionary):
@@ -320,6 +325,7 @@ class Security(Netatmo):
             for k in self.__dict__.keys():
                 string += ((k + '  ::  ' + str(self.__dict__[k]) + '\n'))
             return string
+
 
     def __init__(self, name, log_level='WARNING'):
         Netatmo.__init__(self, log_level)
