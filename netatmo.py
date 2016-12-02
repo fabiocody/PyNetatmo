@@ -16,9 +16,9 @@ HOME = os.getenv('HOME') + '/'
 
 
 
-################
-#  EXCEPTIONS  #
-################
+#######################
+#  MODULE EXCEPTIONS  #
+#######################
 
 
 class NetatmoError(Exception):
