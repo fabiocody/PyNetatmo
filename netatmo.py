@@ -253,7 +253,8 @@ class Security(Netatmo):
     class _NoDevice(NetatmoError):
         pass
 
-    class Camera():
+    class Camera(object):
+    
         def __init__(self, source_dictionary):
             self.__dict__.update(source_dictionary)
 
@@ -262,18 +263,23 @@ class Security(Netatmo):
             for k in self.__dict__.keys():
                 string += ((k + '  ::  ' + str(self.__dict__[k]) + '\n'))
             return string
-    class Person():
+            
+    class Person(object):
+    
         def __init__(self, source_dictionary):
             self.__dict__.update(source_dictionary)
+            
         def __str__(self):
             string = '••Netatmo Person Object••\n\n'
             for k in self.__dict__.keys():
                 string += ((k + '  ::  ' + str(self.__dict__[k]) + '\n'))
             return string
 
-    class Event():
+    class Event(object):
+    
         def __init__(self, source_dictionary):
             self.__dict__.update(source_dictionary)
+            
         def __str__(self):
             string = '••Netatmo Event Object••\n\n'
             for k in self.__dict__.keys():
@@ -314,13 +320,13 @@ class Security(Netatmo):
             raise APIError(error.response.text)
 
     def get_cameras(self):
-        return [ self.Camera(c) for c in self.get_home_data()['cameras']]
+        return [self.Camera(c) for c in self.get_home_data()['cameras']]
 
     def get_events(self, numbers_of_events=15):
         return [self.Event(e) for e in self.get_home_data(numbers_of_events)['events']]
 
     def get_persons(self):
-        return [ self.Person(c) for c in self.get_home_data()['persons']]
+        return [self.Person(c) for c in self.get_home_data()['persons']]
 
     def get_camera_picture(self, event, show=False):
         if type(event) == Security.Event:
