@@ -23,5 +23,11 @@ Use this method to set the thermostat.
 
 It returns the response JSON.
 
-### `Thermosta.switch_schedule(module_id, schedule_id)`
+### `Thermostat.switch_schedule(module_id, schedule_id)`
 Use this method to switch `module_id`'s current schedule with the one specified by `schedule_id`.
+
+### `Thermostat.create_new_schedule(module_id, zones, timetable, name)`
+Use this method to create a new schedule to be stored in the backup list. You can find further information about this method at [dev.netatmo.com](https://dev.netatmo.com/dev/resources/technical/reference/thermostat/createnewschedule).
+
+### `Thermostat.sync_schedule(module_id, zones, timetable)`
+Use this method to change the Thermostat weekly schedule. You can find further information about this method at [dev.netatmo.com](https://dev.netatmo.com/dev/resources/technical/reference/thermostat/syncschedule).

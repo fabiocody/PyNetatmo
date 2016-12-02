@@ -212,6 +212,39 @@ class Thermostat(Netatmo):
             logger.debug('Request completed')
         except requests.exceptions.HTTPError as error:
             raise APIError(error.response.text)
+    
+    def create_new_schedule(self, module_id, zones, timetable, name):
+        logger.debug('Creating new schedule...')
+        params = {
+            'access-token': self.access_token,
+            'device_id': self.device_id,
+            'module_id': module_id,
+            'zones': zones,
+            'timetable': timetable,
+            'name': name
+        }
+        try:
+            response = requests.get('https://api.netatmo.com/api/createnewschedule', params=params)
+            response.raise_for_status()
+            logger.debug('Request completed')
+        except requests.exceptions.HTTPError as error:
+            raise APIError(error.response.text)
+    
+    def sync_schedule(self, module_id, zones, timetable):
+        logger.debug('Creating new schedule...')
+        params = {
+            'access-token': self.access_token,
+            'device_id': self.device_id,
+            'module_id': module_id,
+            'zones': zones,
+            'timetable': timetable
+        }
+        try:
+            response = requests.get('https://api.netatmo.com/api/syncschedule', params=params)
+            response.raise_for_status()
+            logger.debug('Request completed')
+        except requests.exceptions.HTTPError as error:
+            raise APIError(error.response.text)
 
 
 

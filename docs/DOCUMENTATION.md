@@ -12,7 +12,7 @@ You can choose not to enter this information on that moment: in this case, in or
     "scope": "SPACE-SEPARATED SCOPES (e.g. read_thermostat write_thermostat')"
 }
 ```
-You can find the available scopes and more information on [dev.netatmo.com](https://dev.netatmo.com/dev/resources/technical/reference/smarthomeapi).
+You can find the available scopes and further information on [dev.netatmo.com](https://dev.netatmo.com/dev/resources/technical/reference/smarthomeapi).
 
 # Reference
 
