@@ -17,7 +17,7 @@ except:
 try:
     setup(
         name='pynetatmo',
-        version='0.0.1',
+        version='0.0.2',
         description='Netatmo API wrapper written in Python',
         long_description=long_description,
         url='https://github.com/fabiocody/PyNetatmo.git',
@@ -27,6 +27,7 @@ try:
         classifiers=[
             'Programming Language :: Python :: 3.4',
             'Programming Language :: Python :: 3.5',
+            'Programming Language :: Python :: 3.6',
             'Development Status :: 3 - Alpha'
         ],
         keywords='netatmo, thermostat',
