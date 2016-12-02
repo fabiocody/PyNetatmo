@@ -4,9 +4,11 @@ from setuptools import setup
 from os import path, getenv
 import json
 from getpass import getpass
+from subprocess import getoutput
 
 HERE = path.abspath(path.dirname(__file__))
-HOME = getenv('HOME')
+#HOME = getenv('HOME')
+HOME = path.expanduser('~' + getoutput('who am i').split()[0])
 
 try:
     with open(path.join(HERE, 'README.md')) as f:
@@ -17,7 +19,7 @@ except:
 try:
     setup(
         name='pynetatmo',
-        version='0.0.2',
+        version='0.0.3',
         description='Netatmo API wrapper written in Python',
         long_description=long_description,
         url='https://github.com/fabiocody/PyNetatmo.git',
