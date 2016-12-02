@@ -14,6 +14,13 @@ logger = logging.getLogger('netatmo')
 HOME = os.getenv('HOME') + '/'
 
 
+
+
+################
+#  EXCEPTIONS  #
+################
+
+
 class NetatmoError(Exception):
 
     def __init__(self, message=None):
@@ -46,6 +53,13 @@ class ConfigError(NetatmoError):
         else:
             self.message = None
         NetatmoError.__init__(self, self.message)
+
+
+
+
+########################
+#  NETATMO BASE CLASS  #
+########################
 
 
 class Netatmo(object):
@@ -92,6 +106,13 @@ class Netatmo(object):
             return {'access_token': access_token, 'refresh_token': refresh_token, 'scope': scope}
         except requests.exceptions.HTTPError as error:
             raise APIError(error.response.text)
+
+
+
+
+####################
+#  THERMOSTAT API  #
+####################
 
 
 class Thermostat(Netatmo):
@@ -180,6 +201,13 @@ class Thermostat(Netatmo):
             raise APIError(error.response.text)
 
 
+
+
+#################
+#  WEATHER API  #
+#################
+
+
 class Weather(Netatmo):
 
     def __init__(self, device_id=None, get_favorites=False, log_level='WARNING'):
@@ -246,6 +274,13 @@ class Weather(Netatmo):
                     self.wind_strength = module['dashboard_data']['WindStrength']
                     self.wind_angle = module['dashboard_data']['WindAngle']
             logger.debug('Station.__init__ completed')
+
+
+
+
+##################
+#  SECURITY API  #
+##################
 
 
 class Security(Netatmo):
