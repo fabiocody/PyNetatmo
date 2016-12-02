@@ -412,7 +412,6 @@ class Security(Netatmo):
                 raise TypeError('The input event must be a movement or a \'person seen event\'. Only these have related screenshots')
         if type(event) not in [Security.Event, Security.Person]:
             raise TypeError('The input must be an event or a person object')
-
         logger.debug('Getting event related image...')
         try:
             base_url = 'https://api.netatmo.com/api/getcamerapicture?'
