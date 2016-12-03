@@ -81,7 +81,7 @@ class Netatmo(object):
         self.refresh_token = auth_dict['refresh_token']
         self.scope = auth_dict['scope']
         logger.debug('Netatmo.__init__ completed')
-    
+
     def __str__(self):
         string = '••Netatmo Object••\n\n'
         for k in self.__dict__:
@@ -212,7 +212,7 @@ class Thermostat(Netatmo):
             logger.debug('Request completed')
         except requests.exceptions.HTTPError as error:
             raise APIError(error.response.text)
-    
+
     def create_new_schedule(self, module_id, zones, timetable, name):
         logger.debug('Creating new schedule...')
         params = {
@@ -229,7 +229,7 @@ class Thermostat(Netatmo):
             logger.debug('Request completed')
         except requests.exceptions.HTTPError as error:
             raise APIError(error.response.text)
-    
+
     def sync_schedule(self, module_id, zones, timetable):
         logger.debug('Creating new schedule...')
         params = {
@@ -267,7 +267,7 @@ class Weather(Netatmo):
         self.stations = [self.Station(device) for device in self.get_stations_data()['body']['devices']]
         self.my_stations = [station for station in self.stations if station.id == self.device_id]
         logger.debug('Weather.__init__ completed')
-        
+
     def __str__(self):
         string = '••Netatmo Weather Object••\n\n'
         for k in self.__dict__:
@@ -311,7 +311,7 @@ class Weather(Netatmo):
 
 
     class Station(object):
-    
+
         def __init__(self, raw_data):
             self.raw_data = raw_data
             self.name = raw_data['station_name']
@@ -349,13 +349,13 @@ class Weather(Netatmo):
 class Security(Netatmo):
 
     class _NoDevice(NetatmoError):
-    
+
         def __init__(self, message=None):
             NetatmoError.__init__(self, message)
 
 
     class Camera(object):
-    
+
         def __init__(self, source_dictionary):
             self.__dict__.update(source_dictionary)
 
@@ -364,25 +364,24 @@ class Security(Netatmo):
             for k in self.__dict__:
                 string += k + '  ::  ' + str(self.__dict__[k]) + '\n'
             return string
-            
-            
+
+
     class Person(object):
-    
+
         def __init__(self, source_dictionary):
             self.__dict__.update(source_dictionary)
-            
+
         def __str__(self):
             string = '••Netatmo Security.Person Object••\n\n'
             for k in self.__dict__:
                 string += k + '  ::  ' + str(self.__dict__[k]) + '\n'
             return string
 
-
     class Event(object):
-    
+
         def __init__(self, source_dictionary):
             self.__dict__.update(source_dictionary)
-            
+
         def __str__(self):
             string = '••Netatmo Security.Event Object••\n\n'
             for k in self.__dict__:
@@ -392,13 +391,13 @@ class Security(Netatmo):
 
     def __init__(self, name, log_level='WARNING'):
         Netatmo.__init__(self, log_level)
-        self.class_scope = ['read_camera', 'access_camera']
+        self.class_scope = ['read_camera', 'access_camera', 'write_camera']
         for scope in self.class_scope:
             if scope not in self.scope:
                 raise ScopeError(scope)
         self.name = name
         self.home_id, self.place = self._get_home_info()
-    
+
     def __str__(self):
         string = '••Netatmo Security Object••\n\n'
         for k in self.__dict__:
@@ -436,7 +435,9 @@ class Security(Netatmo):
     def get_events(self, numbers_of_events=15):
         return [self.Event(e) for e in self.get_home_data(numbers_of_events)['events']]
 
-    def get_persons(self):
+    def get_persons(self, name=None):
+        if name != None:
+            return [self.Person(c) for c in self.get_home_data()['persons'] if 'pseudo' in c.keys() and c['pseudo'] == name][0]
         return [self.Person(c) for c in self.get_home_data()['persons']]
 
     def get_camera_picture(self, event, show=False):
@@ -459,5 +460,41 @@ class Security(Netatmo):
             if show == True:
                 img.show()
             return img
+        except requests.exceptions.HTTPError as error:
+            raise APIError(error.response.text)
+
+    def get_events_until(self, event):
+        if type(event) is not Security.Event:
+            raise TypeError('Input must be an event obj')
+        logger.debug('Getting events')
+        params = {
+            'access_token': self.access_token,
+            'home_id': self.home_id,
+            'event_id': event.id
+        }
+        try:
+            response = requests.post('https://api.netatmo.com/api/geteventsuntil', params=params)
+            response.raise_for_status()
+            data = response.json()['body']['events_list']
+            return [self.Event(e) for e in data]
+        except requests.exceptions.HTTPError as error:
+            raise APIError(error.response.text)
+
+
+
+    def set_person_away(self, person=None):
+        if type(person) not in [Security.Person, None]:
+            raise TypeError('The input must be a Security.Person object or None if you want to set all people away')
+        params = {
+            'access_token': self.access_token,
+            'home_id': self.home_id
+        }
+        if person != None:
+            params.update({'person_id': person.id})
+        logger.debug('Setting person status...')
+        try:
+            response = requests.post('https://api.netatmo.com/api/setpersonsaway', params=params)
+            response.raise_for_status()
+            return response.text
         except requests.exceptions.HTTPError as error:
             raise APIError(error.response.text)

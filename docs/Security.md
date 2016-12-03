@@ -9,10 +9,16 @@ Since Netatmo's Security API works on a home-based structure you have to pass th
 Use this method to get the full data JSON from your home. Returns a `dict`.
 
 ### `Security.get_cameras()`
-Use this method to get all information about cameras in you home. Returns a `list` of `dict`.
+Use this method to get all information about cameras in you home. It returns a `list` of `objects`.
 
 ### `Security.get_events(number_of_events=15)`
-Use this method to get a `list` of `dict` each containing an event.
+Use this method to get all home's available events. It returns a `list` of `objects`.
+
+### `Security.get_events_until(event_obj)`
+Use this method to get all home's available events until the given one. It returns a `list` of `objects`.
 
 ### `Security.get_camera_picture(event, show=False)`
-Use this method to get the picture of a specific events. Set `show` to `True` if you want to open the picture in the default pictures handler.
+Use this method to get the picture of a specific event. Set `show` to `True` if you want to open the picture in the default pictures handler.
+
+### `set_person_away(self, person=None)`
+Use this method to set people's status away. If no person obj is passed to the method, it will set all home's users to away.
