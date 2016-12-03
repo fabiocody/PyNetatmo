@@ -480,8 +480,6 @@ class Security(Netatmo):
         except requests.exceptions.HTTPError as error:
             raise APIError(error.response.text)
 
-
-
     def set_person_away(self, person=None):
         if type(person) not in [Security.Person, None]:
             raise TypeError('The input must be a Security.Person object or None if you want to set all people away')

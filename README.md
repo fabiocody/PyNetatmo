@@ -4,4 +4,4 @@ Netatmo SmartHome API wrapper written in Python
 This wrapper is still under active development.
 
 ## Credits
-I would like to thank [Alessandro Nichelini](https://github.com/Alenichel) for writing the `Welcome` class.
+I would like to thank [Alessandro Nichelini](https://github.com/Alenichel) for writing the `Security` class.
