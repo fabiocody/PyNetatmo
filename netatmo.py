@@ -191,6 +191,7 @@ class Thermostat(Netatmo):
                 response = requests.post('https://api.netatmo.com/api/setthermpoint', params=params)
                 response.raise_for_status()
                 logger.debug('Request completed')
+                return response.text
             except requests.exceptions.HTTPError as error:
                 raise APIError(error.response.text)
         else:
@@ -210,6 +211,7 @@ class Thermostat(Netatmo):
             response = requests.get('https://api.netatmo.com/api/switchschedule', params=params)
             response.raise_for_status()
             logger.debug('Request completed')
+            return response.text
         except requests.exceptions.HTTPError as error:
             raise APIError(error.response.text)
 
@@ -227,6 +229,7 @@ class Thermostat(Netatmo):
             response = requests.get('https://api.netatmo.com/api/createnewschedule', params=params)
             response.raise_for_status()
             logger.debug('Request completed')
+            return response.text
         except requests.exceptions.HTTPError as error:
             raise APIError(error.response.text)
 
@@ -243,6 +246,7 @@ class Thermostat(Netatmo):
             response = requests.get('https://api.netatmo.com/api/syncschedule', params=params)
             response.raise_for_status()
             logger.debug('Request completed')
+            return response.text
         except requests.exceptions.HTTPError as error:
             raise APIError(error.response.text)
 
@@ -340,7 +344,6 @@ class Weather(Netatmo):
 
 
 
-
 ##################
 #  SECURITY API  #
 ##################
@@ -376,6 +379,7 @@ class Security(Netatmo):
             for k in self.__dict__:
                 string += k + '  ::  ' + str(self.__dict__[k]) + '\n'
             return string
+
 
     class Event(object):
 
@@ -488,7 +492,7 @@ class Security(Netatmo):
             'home_id': self.home_id
         }
         if person != None:
-            params.update({'person_id': person.id})
+            params['person_id'] = person.id
         logger.debug('Setting person status...')
         try:
             response = requests.post('https://api.netatmo.com/api/setpersonsaway', params=params)
