@@ -52,6 +52,8 @@ finally:
             i, o, e = select([stdin], [], [], 5)
             if i:
                 configure = stdin.readline().strip()
+            else:
+                configure = 'n'
             if configure == 'y' or configure == 'Y':
                 with open(path.join(HOME, '.pynetatmo.conf'), 'w') as f:
                     conf = dict()
