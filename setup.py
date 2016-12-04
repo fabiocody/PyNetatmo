@@ -7,8 +7,10 @@ from getpass import getpass
 from subprocess import getoutput
 
 HERE = path.abspath(path.dirname(__file__))
-#HOME = getenv('HOME')
-HOME = path.expanduser('~' + getoutput('who am i').split()[0])
+try:
+    HOME = path.expanduser('~' + getoutput('who am i').split()[0])
+except:
+    HOME = getenv('HOME')
 
 try:
     with open(path.join(HERE, 'README.md')) as f:
