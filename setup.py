@@ -5,6 +5,7 @@ from os import path, getenv
 from sys import stdin, stdout, stderr
 from getpass import getpass
 from subprocess import getoutput
+from select import select
 import json
 
 HERE = path.abspath(path.dirname(__file__))
@@ -47,7 +48,10 @@ finally:
                 conf = json.load(f)
                 print('Configuration file already exists. Skipping configuration steps.')
         except FileNotFoundError:
-            configure = input('Would you like to be guided through the configuration steps (otherwise you will have to create the JSON file on your own)? [y/n] ')
+            print('Would you like to be guided through the configuration steps (otherwise you will have to create the JSON file on your own)? [y/n] ', end='')
+            i, o, e = select([stdin], [], [], 5)
+            if i:
+                configure = stdin.readline().strip()
             if configure == 'y' or configure == 'Y':
                 with open(path.join(HOME, '.pynetatmo.conf'), 'w') as f:
                     conf = dict()
