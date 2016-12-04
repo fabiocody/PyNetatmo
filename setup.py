@@ -2,9 +2,10 @@
 
 from setuptools import setup
 from os import path, getenv
-import json
+from sys import stdin, stdout, stderr
 from getpass import getpass
 from subprocess import getoutput
+import json
 
 HERE = path.abspath(path.dirname(__file__))
 try:
@@ -39,22 +40,23 @@ try:
         install_requires=['pillow']
     )
 finally:
-    print()
-    try:
-        with open(path.join(HOME, '.pynetatmo.conf')) as f:
-            conf = json.load(f)
-            print('Configuration file already exists')
-    except FileNotFoundError:
-        configure = input('Would you like to be guided through the configuration steps (otherwise you will have to create the JSON file on your own)? [y/n] ')
-        if configure == 'y' or configure == 'Y':
-            with open(path.join(HOME, '.pynetatmo.conf'), 'w') as f:
-                conf = dict()
-                conf['user'] = input('User: ')
-                conf['password'] = getpass()
-                conf['client_id'] = input('Client ID: ')
-                conf['client_secret'] = input('Client Secret: ')
-                conf['scope'] = input('Scope: ')
-                json.dump(conf, f, indent=4)
-                print('Configuration file created.')
-        else:
-            print('Aborted. Please reed the docs to know what to do now.')
+    if stdin.isatty() and stdout.isatty() and stderr.isatty():
+        print()
+        try:
+            with open(path.join(HOME, '.pynetatmo.conf')) as f:
+                conf = json.load(f)
+                print('Configuration file already exists. Skipping configuration steps.')
+        except FileNotFoundError:
+            configure = input('Would you like to be guided through the configuration steps (otherwise you will have to create the JSON file on your own)? [y/n] ')
+            if configure == 'y' or configure == 'Y':
+                with open(path.join(HOME, '.pynetatmo.conf'), 'w') as f:
+                    conf = dict()
+                    conf['user'] = input('User: ')
+                    conf['password'] = getpass()
+                    conf['client_id'] = input('Client ID: ')
+                    conf['client_secret'] = input('Client Secret: ')
+                    conf['scope'] = input('Scope: ')
+                    json.dump(conf, f, indent=4)
+                    print('Configuration file created.')
+            else:
+                print('Aborted. Please reed the docs to know what to do now.')
