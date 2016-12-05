@@ -9,10 +9,13 @@ from select import select
 from platform import python_version_tuple
 import json
 
-PY_VERSION = [int(i) for i in python_version_tuple()]
-if PY_VERSION[0] != 3 and PY_VERSION[1] < 4:
-    print('ERROR: Python 3.4 or higher is required.\nAborted.')
-    exit(1)
+try:
+    PY_VERSION = [int(i) for i in python_version_tuple()]
+    if PY_VERSION[0] != 3 and PY_VERSION[1] < 4:
+        print('ERROR: Python 3.4 or higher is required.\nAborted.')
+        exit(1)
+except:
+    pass
 
 HERE = path.abspath(path.dirname(__file__))
 try:
