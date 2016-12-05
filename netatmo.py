@@ -9,7 +9,7 @@ from PIL import Image
 from platform import python_version_tuple
 
 
-__version__ = '0.0.3'
+__version__ = '0.0.4'
 
 PY_VERSION = [int(i) for i in python_version_tuple()]
 if PY_VERSION[0] != 3 and PY_VERSION[1] < 4:
@@ -63,6 +63,19 @@ class ConfigError(NetatmoError):
 
 
 
+###################
+#  CONFIGURATION  #
+###################
+
+with open(HOME + '.pynetatmo.conf', 'r') as f:
+    CONF = json.load(f)
+    logger.debug('Configuration loaded')
+except FileNotFoundError:
+    raise ConfigError('file')
+
+
+
+
 ########################
 #  NETATMO BASE CLASS  #
 ########################
@@ -73,14 +86,7 @@ class Netatmo(object):
     def __init__(self, log_level):
         logging.basicConfig(format='[*] %(levelname)s : %(module)s : %(message)s',  level=getattr(logging, log_level))
         try:
-            with open(HOME + '.pynetatmo.conf', 'r') as f:
-                conf = json.load(f)
-                logger.debug('Configuration loaded')
-        except FileNotFoundError:
-            raise ConfigError('file')
-        try:
-            auth_dict = self.auth(conf['user'], conf['password'],
-                                  conf['client_id'], conf['client_secret'], conf['scope'])
+            auth_dict = self.auth(CONF['user'], CONF['password'], CONF['client_id'], CONF['client_secret'], CONF['scope'])
         except KeyError:
             raise ConfigError('key')
         self.access_token = auth_dict['access_token']
