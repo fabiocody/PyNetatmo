@@ -4,9 +4,11 @@ import os
 import requests
 import json
 import logging
+from sys import stdin
 from io import BytesIO
 from PIL import Image
 from platform import python_version_tuple
+from select import select
 
 
 __version__ = '0.0.6'
@@ -55,7 +57,7 @@ class ConfigError(NetatmoError):
         if error == 'file':
             self.message = 'Could not find .pynetatmo.conf in your home directory'
         elif error == 'key':
-            self.message = 'Your configuration file appears to be invalid. Please check {}.pynetatmo.conf'.format(HOME)
+            self.message = 'Your configuration file appears to be invalid. Please check {home}.pynetatmo.conf'.format(home=HOME)
         else:
             self.message = None
         NetatmoError.__init__(self, self.message)
@@ -68,7 +70,7 @@ class ConfigError(NetatmoError):
 ###################
 
 try:
-    with open(HOME + '.pynetatmo.conf', 'r') as f:
+    with open(os.path.join(HOME, '.pynetatmo.conf'), 'r') as f:
         CONF = json.load(f)
         logger.debug('Configuration loaded')
 except FileNotFoundError:
@@ -79,7 +81,7 @@ except FileNotFoundError:
     else:
         configure = 'n'
     if configure == 'y' or configure == 'Y':
-        with open(path.join(HOME, '.pynetatmo.conf'), 'w') as f:
+        with open(os.path.join(HOME, '.pynetatmo.conf'), 'w') as f:
             CONF = dict()
             CONF['user'] = input('User: ')
             CONF['password'] = getpass()
@@ -135,9 +137,9 @@ class Netatmo(object):
             access_token = response.json()['access_token']
             refresh_token = response.json()['refresh_token']
             scope = response.json()['scope']
-            logger.debug('Your access token is:', access_token)
-            logger.debug('Your refresh token is:', refresh_token)
-            logger.debug('Your scopes are:', scope)
+            logger.debug('Your access token is: ' + access_token)
+            logger.debug('Your refresh token is: ' + refresh_token)
+            logger.debug('Your scopes are: ' + scope)
             logger.debug('Authorization completed')
             return {'access_token': access_token, 'refresh_token': refresh_token, 'scope': scope}
         except requests.exceptions.HTTPError as error:
