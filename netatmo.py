@@ -67,9 +67,10 @@ class ConfigError(NetatmoError):
 #  CONFIGURATION  #
 ###################
 
-with open(HOME + '.pynetatmo.conf', 'r') as f:
-    CONF = json.load(f)
-    logger.debug('Configuration loaded')
+try:
+    with open(HOME + '.pynetatmo.conf', 'r') as f:
+        CONF = json.load(f)
+        logger.debug('Configuration loaded')
 except FileNotFoundError:
     raise ConfigError('file')
 
