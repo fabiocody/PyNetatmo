@@ -9,6 +9,7 @@ from io import BytesIO
 from PIL import Image
 from platform import python_version_tuple
 from select import select
+from getpass import getpass
 
 
 __version__ = '0.0.6'
