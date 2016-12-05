@@ -4,7 +4,7 @@ import os
 import requests
 import json
 import logging
-from sys import stdin
+from sys import exit, stdin
 from io import BytesIO
 from PIL import Image
 from platform import python_version_tuple
@@ -76,7 +76,7 @@ try:
         logger.debug('Configuration loaded')
 except FileNotFoundError:
     print('Configuration file not found.\nWould you like to be guided through the configuration steps (otherwise you will have to create the JSON file on your own)? [y/n] ', end='')
-    i, o, e = select([stdin], [], [], 5)
+    i, o, e = select([stdin], [], [], 15)
     if i:
         configure = stdin.readline().strip()
     else:
