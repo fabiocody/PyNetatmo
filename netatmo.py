@@ -8,11 +8,10 @@ from sys import exit, stdin
 from io import BytesIO
 from PIL import Image
 from platform import python_version_tuple
-from select import select
 from getpass import getpass
 
 
-__version__ = '0.0.9'
+__version__ = '0.0.10'
 
 logger = logging.getLogger('netatmo')
 logging.basicConfig(format='[*] %(levelname)s : %(module)s : %(message)s',  level=getattr(logging, 'WARNING'))
@@ -76,13 +75,8 @@ try:
         CONF = json.load(f)
         logger.debug('Configuration loaded')
 except FileNotFoundError:
-    print('Configuration file not found.\nWould you like to be guided through the configuration steps (otherwise you will have to create the JSON file on your own)? [y/n] ', end='')
-    i, o, e = select([stdin], [], [], 15)
-    if i:
-        configure = stdin.readline().strip()
-    else:
-        configure = 'n'
-    if configure == 'y' or configure == 'Y':
+    configure = input('Configuration file not found.\nWould you like to be guided through the configuration steps (otherwise you will have to create the JSON file on your own)? [y/n] ', end='')
+    if configure.upper() == 'Y':
         with open(os.path.join(HOME, '.pynetatmo.conf'), 'w') as f:
             try:
                 CONF = dict()
