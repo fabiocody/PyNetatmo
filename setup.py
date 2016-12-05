@@ -13,7 +13,7 @@ except:
 
 setup(
     name='pynetatmo',
-    version='0.0.7',
+    version='0.0.8',
     description='Netatmo API wrapper written in Python',
     long_description=long_description,
     url='https://github.com/fabiocody/PyNetatmo.git',

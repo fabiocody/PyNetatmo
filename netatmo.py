@@ -12,7 +12,7 @@ from select import select
 from getpass import getpass
 
 
-__version__ = '0.0.7'
+__version__ = '0.0.8'
 
 logger = logging.getLogger('netatmo')
 HOME = os.getenv('HOME') + '/'
@@ -83,14 +83,19 @@ except FileNotFoundError:
         configure = 'n'
     if configure == 'y' or configure == 'Y':
         with open(os.path.join(HOME, '.pynetatmo.conf'), 'w') as f:
-            CONF = dict()
-            CONF['user'] = input('User: ')
-            CONF['password'] = getpass()
-            CONF['client_id'] = input('Client ID: ')
-            CONF['client_secret'] = input('Client Secret: ')
-            CONF['scope'] = input('Scope: ')
-            json.dump(CONF, f, indent=4)
-            logger.debug('Configuration file created')
+            try:
+                CONF = dict()
+                CONF['user'] = input('User: ')
+                CONF['password'] = getpass()
+                CONF['client_id'] = input('Client ID: ')
+                CONF['client_secret'] = input('Client Secret: ')
+                CONF['scope'] = input('Scope: ')
+                json.dump(CONF, f, indent=4)
+                logger.debug('Configuration file created')
+            except KeyboardInterrupt:
+                os.remove(os.path.join(HOME, '.pynetatmo.conf'))
+                logger.error('Aborted')
+                exit(1)
     else:
         logger.error('You can\'t use this module without a configuration file. Aborted')
         exit(1)
@@ -140,7 +145,7 @@ class Netatmo(object):
             scope = response.json()['scope']
             logger.debug('Your access token is: ' + access_token)
             logger.debug('Your refresh token is: ' + refresh_token)
-            logger.debug('Your scopes are: ' + scope)
+            logger.debug('Your scopes are: ' + str(scope))
             logger.debug('Authorization completed')
             return {'access_token': access_token, 'refresh_token': refresh_token, 'scope': scope}
         except requests.exceptions.HTTPError as error:
