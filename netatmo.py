@@ -12,7 +12,7 @@ from select import select
 from getpass import getpass
 
 
-__version__ = '0.0.6'
+__version__ = '0.0.7'
 
 logger = logging.getLogger('netatmo')
 HOME = os.getenv('HOME') + '/'
