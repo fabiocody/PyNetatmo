@@ -12,9 +12,10 @@ from select import select
 from getpass import getpass
 
 
-__version__ = '0.0.8'
+__version__ = '0.0.9'
 
 logger = logging.getLogger('netatmo')
+logging.basicConfig(format='[*] %(levelname)s : %(module)s : %(message)s',  level=getattr(logging, 'WARNING'))
 HOME = os.getenv('HOME') + '/'
 
 PY_VERSION = [int(i) for i in python_version_tuple()]
@@ -94,7 +95,7 @@ except FileNotFoundError:
                 logger.debug('Configuration file created')
             except KeyboardInterrupt:
                 os.remove(os.path.join(HOME, '.pynetatmo.conf'))
-                logger.error('Aborted')
+                logger.error('\nAborted')
                 exit(1)
     else:
         logger.error('You can\'t use this module without a configuration file. Aborted')
