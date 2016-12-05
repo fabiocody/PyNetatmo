@@ -9,15 +9,15 @@ from PIL import Image
 from platform import python_version_tuple
 
 
-__version__ = '0.0.5'
-
-PY_VERSION = [int(i) for i in python_version_tuple()]
-if PY_VERSION[0] != 3 and PY_VERSION[1] < 4:
-    print('ERROR: Python 3.4 or higher is required.\nAborted.')
-    exit(1)
+__version__ = '0.0.6'
 
 logger = logging.getLogger('netatmo')
 HOME = os.getenv('HOME') + '/'
+
+PY_VERSION = [int(i) for i in python_version_tuple()]
+if PY_VERSION[0] != 3 and PY_VERSION[1] < 4:
+    logger.error('Python 3.4 or higher is required. Aborted')
+    exit(1)
 
 
 
@@ -72,7 +72,25 @@ try:
         CONF = json.load(f)
         logger.debug('Configuration loaded')
 except FileNotFoundError:
-    raise ConfigError('file')
+    print('Configuration file not found.\nWould you like to be guided through the configuration steps (otherwise you will have to create the JSON file on your own)? [y/n] ', end='')
+    i, o, e = select([stdin], [], [], 5)
+    if i:
+        configure = stdin.readline().strip()
+    else:
+        configure = 'n'
+    if configure == 'y' or configure == 'Y':
+        with open(path.join(HOME, '.pynetatmo.conf'), 'w') as f:
+            CONF = dict()
+            CONF['user'] = input('User: ')
+            CONF['password'] = getpass()
+            CONF['client_id'] = input('Client ID: ')
+            CONF['client_secret'] = input('Client Secret: ')
+            CONF['scope'] = input('Scope: ')
+            json.dump(CONF, f, indent=4)
+            logger.debug('Configuration file created')
+    else:
+        logger.error('You can\'t use this module without a configuration file. Aborted')
+        exit(1)
 
 
 
@@ -101,7 +119,7 @@ class Netatmo(object):
             string += k + '  ::  ' + str(self.__dict__[k]) + '\n'
         return string
 
-    def auth(self, user, password, client_id, client_secret, scope, verbose=False):
+    def auth(self, user, password, client_id, client_secret, scope):
         logger.debug('Authorizing...')
         payload = {
             'grant_type': 'password',
@@ -117,10 +135,9 @@ class Netatmo(object):
             access_token = response.json()['access_token']
             refresh_token = response.json()['refresh_token']
             scope = response.json()['scope']
-            if verbose:
-                print('Your access token is:', access_token)
-                print('Your refresh token is:', refresh_token)
-                print('Your scopes are:', scope)
+            logger.debug('Your access token is:', access_token)
+            logger.debug('Your refresh token is:', refresh_token)
+            logger.debug('Your scopes are:', scope)
             logger.debug('Authorization completed')
             return {'access_token': access_token, 'refresh_token': refresh_token, 'scope': scope}
         except requests.exceptions.HTTPError as error:
@@ -483,7 +500,7 @@ class Security(Netatmo):
     def get_events_until(self, event):
         if type(event) is not Security.Event:
             raise TypeError('Input must be an event obj')
-        logger.debug('Getting events')
+        logger.debug('Getting events...')
         params = {
             'access_token': self.access_token,
             'home_id': self.home_id,
