@@ -9,7 +9,7 @@ from PIL import Image
 from platform import python_version_tuple
 
 
-__version__ = '0.0.2'
+__version__ = '0.0.3'
 
 PY_VERSION = [int(i) for i in python_version_tuple()]
 if PY_VERSION[0] != 3 and PY_VERSION[1] < 4:

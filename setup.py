@@ -9,6 +9,7 @@ from select import select
 from platform import python_version_tuple
 import json
 
+'''
 try:
     PY_VERSION = [int(i) for i in python_version_tuple()]
     if PY_VERSION[0] != 3 and PY_VERSION[1] < 4:
@@ -16,12 +17,16 @@ try:
         exit(1)
 except:
     pass
+'''
 
 HERE = path.abspath(path.dirname(__file__))
+
+'''
 try:
     HOME = path.expanduser('~' + getoutput('who am i').split()[0])
 except:
     HOME = getenv('HOME')
+'''
 
 try:
     with open(path.join(HERE, 'README.md')) as f:
@@ -29,26 +34,27 @@ try:
 except:
     long_description = ''
 
-try:
-    setup(
-        name='pynetatmo',
-        version='0.0.2',
-        description='Netatmo API wrapper written in Python',
-        long_description=long_description,
-        url='https://github.com/fabiocody/PyNetatmo.git',
-        author='Fabio Codiglioni',
-        author_email='fabiocody@icloud.com',
-        license='MIT',
-        classifiers=[
-            'Programming Language :: Python :: 3.4',
-            'Programming Language :: Python :: 3.5',
-            'Programming Language :: Python :: 3.6',
-            'Development Status :: 3 - Alpha'
-        ],
-        keywords='netatmo, thermostat',
-        py_modules=['netatmo'],
-        install_requires=['pillow']
-    )
+#try:
+setup(
+    name='pynetatmo',
+    version='0.0.3',
+    description='Netatmo API wrapper written in Python',
+    long_description=long_description,
+    url='https://github.com/fabiocody/PyNetatmo.git',
+    author='Fabio Codiglioni',
+    author_email='fabiocody@icloud.com',
+    license='MIT',
+    classifiers=[
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Development Status :: 3 - Alpha'
+    ],
+    keywords='netatmo, thermostat',
+    py_modules=['netatmo'],
+    install_requires=['pillow']
+)
+'''
 finally:
     if stdin.isatty() and stdout.isatty() and stderr.isatty():
         print()
@@ -75,3 +81,4 @@ finally:
                     print('Configuration file created.')
             else:
                 print('Aborted. Please reed the docs to know what to do now.')
+'''
