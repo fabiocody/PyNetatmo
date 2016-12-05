@@ -6,7 +6,13 @@ from sys import stdin, stdout, stderr
 from getpass import getpass
 from subprocess import getoutput
 from select import select
+from platform import python_version_tuple
 import json
+
+PY_VERSION = [int(i) for i in python_version_tuple()]
+if PY_VERSION[0] != 3 and PY_VERSION[1] < 4:
+    print('ERROR: Python 3.4 or higher is required.\nAborted.')
+    exit(1)
 
 HERE = path.abspath(path.dirname(__file__))
 try:
@@ -23,7 +29,7 @@ except:
 try:
     setup(
         name='pynetatmo',
-        version='0.0.1',
+        version='0.0.2',
         description='Netatmo API wrapper written in Python',
         long_description=long_description,
         url='https://github.com/fabiocody/PyNetatmo.git',

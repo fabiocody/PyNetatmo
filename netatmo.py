@@ -6,9 +6,15 @@ import json
 import logging
 from io import BytesIO
 from PIL import Image
+from platform import python_version_tuple
 
 
-__version__ = '0.0.1'
+__version__ = '0.0.2'
+
+PY_VERSION = [int(i) for i in python_version_tuple()]
+if PY_VERSION[0] != 3 and PY_VERSION[1] < 4:
+    print('ERROR: Python 3.4 or higher is required.\nAborted.')
+    exit(1)
 
 logger = logging.getLogger('netatmo')
 HOME = os.getenv('HOME') + '/'
