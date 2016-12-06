@@ -31,3 +31,20 @@ API call. Use this method to create a new schedule to be stored in the backup li
 
 ### `Thermostat.sync_schedule(module_id, zones, timetable)`
 API call. Use this method to change the Thermostat weekly schedule. You can find further information about this method at [dev.netatmo.com](https://dev.netatmo.com/dev/resources/technical/reference/thermostat/syncschedule).
+
+
+# Quick Tutorial
+
+```python
+# Import Thermostat class
+from netatmo import Thermostat
+
+# Create Thermostat instance
+t = Thermostat('70:ee:50:aa:bb:cc')
+
+# Set thermostat to 22°C
+t.set_therm_point(t.get_module_ids()[0], 'manual', setpoint_temp=22)
+
+# Print thermostat's measured temperature and set temperature
+print(t.get_current_temperatures())
+```
