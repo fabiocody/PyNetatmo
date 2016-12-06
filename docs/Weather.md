@@ -27,3 +27,20 @@ Use this method to return all the stations identified by `name`. Returns a `dict
 - `wind_strength`: wind strength measured by the station.
 - `wind angle`: wind angle measured by the station.
 Obviously, a measured attribute is present only if the station can measure it.
+
+
+# Quick Tutorial
+
+```python
+# Import Weather class
+from netatmo import Weather
+
+# Create Weather instance
+w = Weather()
+
+# Get station from name
+s = w.get_stations_from_name('mystation')
+
+# Print data
+print(s.name, s.temperature, s.humidity)
+```
