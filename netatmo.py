@@ -11,7 +11,7 @@ from platform import python_version_tuple
 from getpass import getpass
 
 
-__version__ = '0.0.10'
+__version__ = '0.0.11'
 
 logger = logging.getLogger('netatmo')
 logging.basicConfig(format='[*] %(levelname)s : %(module)s : %(message)s',  level=getattr(logging, 'WARNING'))
@@ -75,7 +75,7 @@ try:
         CONF = json.load(f)
         logger.debug('Configuration loaded')
 except FileNotFoundError:
-    configure = input('Configuration file not found.\nWould you like to be guided through the configuration steps (otherwise you will have to create the JSON file on your own)? [y/n] ', end='')
+    configure = input('Configuration file not found.\nWould you like to be guided through the configuration steps (otherwise you will have to create the JSON file on your own)? [y/n] ')
     if configure.upper() == 'Y':
         with open(os.path.join(HOME, '.pynetatmo.conf'), 'w') as f:
             try:
