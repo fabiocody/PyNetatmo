@@ -425,6 +425,17 @@ class Security(Netatmo):
                 string += k + '  ::  ' + str(self.__dict__[k]) + '\n'
             return string
 
+    @property
+    def cameras(self):
+        return self.get_cameras()
+
+    @property
+    def events(self):
+        return self.get_events()
+
+    @property
+    def persons(self):
+        return self.get_persons()
 
     def __init__(self, name, log_level='WARNING'):
         Netatmo.__init__(self, log_level)

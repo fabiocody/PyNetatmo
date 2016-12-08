@@ -22,3 +22,5 @@ Use this method to get the picture of a specific event. Set `show` to `True` if 
 
 ### `set_person_away(self, person=None)`
 Use this method to set people's status away. If no person obj is passed to the method, it will set all home's users to away.
+
+If you like to work in a more object-oriented way you can call for `cameras`, `events` and `persons` properties of the Security class to get the related data.
