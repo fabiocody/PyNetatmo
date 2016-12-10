@@ -253,7 +253,7 @@ class Thermostat(Netatmo):
     def switch_schedule(self, module_id, schedule_id):
         logger.debug('Switching schedule...')
         params = {
-            'access_token': self.access_token_token,
+            'access_token': self.access_token,
             'device_id': self.device_id,
             'module_id': module_id,
             'schedule_id': schedule_id
