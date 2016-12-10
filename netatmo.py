@@ -11,7 +11,7 @@ from platform import python_version_tuple
 from getpass import getpass
 
 
-__version__ = '0.0.11'
+__version__ = '0.0.12'
 
 logger = logging.getLogger('netatmo')
 logging.basicConfig(format='[*] %(levelname)s : %(module)s : %(message)s',  level=getattr(logging, 'WARNING'))
@@ -111,10 +111,22 @@ class Netatmo(object):
             auth_dict = self.auth(CONF['user'], CONF['password'], CONF['client_id'], CONF['client_secret'], CONF['scope'])
         except KeyError:
             raise ConfigError('key')
-        self.access_token = auth_dict['access_token']
-        self.refresh_token = auth_dict['refresh_token']
-        self.scope = auth_dict['scope']
+        self.__access_token = auth_dict['access_token']
+        self.__refresh_token = auth_dict['refresh_token']
+        self.__scope = auth_dict['scope']
         logger.debug('Netatmo.__init__ completed')
+
+    @property
+    def access_token(self):
+        return self.__access_token
+
+    @property
+    def refresh_token(self):
+        return self.__refresh_token
+
+    @property
+    def scope(self):
+        return self.__scope
 
     def __str__(self):
         string = '••Netatmo Object••\n\n'
@@ -158,13 +170,29 @@ class Thermostat(Netatmo):
 
     def __init__(self, device_id, log_level='WARNING'):
         Netatmo.__init__(self, log_level)
-        self.class_scope = ['read_thermostat', 'write_thermostat']
-        for scope in self.class_scope:
+        self.__class_scope = ['read_thermostat', 'write_thermostat']
+        for scope in self.__class_scope:
             if scope not in self.scope:
                 raise ScopeError(scope)
-        self.device_id = device_id
+        self.__device_id = device_id
         self.get_thermostats_data()      # Test call to check if device_id is valid
         logger.debug('Thermostat.__init__ completed')
+
+    @property
+    def device_id(self):
+        return self.__device_id
+
+    @property
+    def temperature(self):
+        return self.get_thermostats_data()['devices'][0]['modules'][0]['measured']['temperature']
+
+    @property
+    def set_temperature(self):
+        return self.get_thermostats_data()['devices'][0]['modules'][0]['measured']['setpoint_temp']
+
+    @property
+    def relay_cmd(self):
+        return self.get_thermostats_data()['devices'][0]['modules'][0]['therm_relay_cmd']
 
     def __str__(self):
         string = '••Netatmo Thermostat Object••\n\n'
@@ -196,16 +224,6 @@ class Thermostat(Netatmo):
                     modules_ids.append(module['_id'])
         return modules_ids
 
-    def get_current_temperatures(self):
-        logger.debug('Getting current temperatures...')
-        data = {'temp': [], 'setpoint_temp': []}
-        for device in self.get_thermostats_data()['devices']:
-            if device['_id'] == self.device_id:
-                for module in device['modules']:
-                    data['temp'].append(module['measured']['temperature'])
-                    data['setpoint_temp'].append(module['measured']['setpoint_temp'])
-        return data
-
     def set_therm_point(self, module_id, setpoint_mode, setpoint_endtime=None, setpoint_temp=None):
         logger.debug('Setting thermal point...')
         allowed_setpoint_modes = ['program', 'away', 'hg', 'manual', 'off', 'max']
@@ -235,7 +253,7 @@ class Thermostat(Netatmo):
     def switch_schedule(self, module_id, schedule_id):
         logger.debug('Switching schedule...')
         params = {
-            'access_token': self.access_token,
+            'access_token': self.access_token_token,
             'device_id': self.device_id,
             'module_id': module_id,
             'schedule_id': schedule_id
@@ -295,15 +313,27 @@ class Weather(Netatmo):
 
     def __init__(self, device_id=None, get_favorites=False, log_level='WARNING'):
         Netatmo.__init__(self, log_level)
-        self.class_scope = ['read_station']
-        for scope in self.class_scope:
+        self.__class_scope = ['read_station']
+        for scope in self.__class_scope:
             if scope not in self.scope:
                 raise ScopeError(scope)
-        self.device_id = device_id
+        self.__device_id = device_id
         self.get_favorites = get_favorites
-        self.stations = [self.Station(device) for device in self.get_stations_data()['body']['devices']]
-        self.my_stations = [station for station in self.stations if station.id == self.device_id]
+        #self.stations = [self.Station(device) for device in self.get_stations_data()['body']['devices']]
+        #self.my_stations = [station for station in self.stations if station.id == self.device_id]
         logger.debug('Weather.__init__ completed')
+
+    @property
+    def stations(self):
+        return [self.Station(self, device) for device in self.get_stations_data()['body']['devices']]
+
+    @property
+    def my_stations(self):
+        return [station for station in self.stations if station.id == self.device_id]
+
+    @property
+    def device_id(self):
+        return self.__device_id
 
     def __str__(self):
         string = '••Netatmo Weather Object••\n\n'
@@ -349,23 +379,76 @@ class Weather(Netatmo):
 
     class Station(object):
 
-        def __init__(self, raw_data):
-            self.raw_data = raw_data
-            self.name = raw_data['station_name']
-            self.id = raw_data['_id']
-            self.type = [t for module in raw_data['modules'] for t in module['data_type']]
-            self.modules = self.raw_data['modules']
-            for module in self.modules:
-                if 'Temperature' in module['dashboard_data']:
-                    self.temperature = module['dashboard_data']['Temperature']
-                if 'Humidity' in module['dashboard_data']:
-                    self.humidity = module['dashboard_data']['Humidity']
-                if 'Rain' in module['dashboard_data']:
-                    self.rain = module['dashboard_data']['Rain']
-                if 'WindStrength' in module['dashboard_data']:
-                    self.wind_strength = module['dashboard_data']['WindStrength']
-                    self.wind_angle = module['dashboard_data']['WindAngle']
+        def __init__(self, weather, raw_data):
+            self.__weather = weather    # Weather class that created the current Station instance
+            self.__raw_data = raw_data
+            self.__name = raw_data['station_name']
+            self.__id = raw_data['_id']
+            self.__data_type = [t for module in raw_data['modules'] for t in module['data_type']]
+            self.__modules = raw_data['modules']
             logger.debug('Station.__init__ completed')
+
+        @property
+        def name(self):
+            return self.__name
+
+        @property
+        def id(self):
+            return self.__id
+
+        @property
+        def data_type(self):
+            return self.__data_type
+
+        @property
+        def temperature(self):
+            if self.refresh():
+                for module in self.__modules:
+                    if 'Temperature' in module['dashboard_data']:
+                        return module['dashboard_data']['Temperature']
+                return None
+            else:
+                return None
+
+        @property
+        def humidity(self):
+            if self.refresh():
+                for module in self.__modules:
+                    if 'Humidity' in module['dashboard_data']:
+                        return module['dashboard_data']['Humidity']
+                return None
+            else:
+                return None
+
+        @property
+        def rain(self):
+            if self.refresh():
+                for module in self.__modules:
+                    if 'Rain' in module['dashboard_data']:
+                        return module['dashboard_data']['Rain']
+                return None
+            else:
+                return None
+
+        @property
+        def wind_strength(self):
+            if self.refresh():
+                for module in self.__modules:
+                    if 'WindStrength' in module['dashboard_data']:
+                        return module['dashboard_data']['WindStrength']
+                return None
+            else:
+                return None
+
+        @property
+        def wind_angle(self):
+            if self.refresh():
+                for module in self.__modules:
+                    if 'WindAngle' in module['dashboard_data']:
+                        return module['dashboard_data']['WindAngle']
+                return None
+            else:
+                return None
 
         def __str__(self):
             string = '••Netatmo Weather.Station Object••\n\n'
@@ -373,6 +456,15 @@ class Weather(Netatmo):
                 if k != 'raw_data':
                     string += k + '  ::  ' + str(self.__dict__[k]) + '\n'
             return string
+
+        def refresh(self):
+            name = self.name
+            weather = self.__weather
+            for device in self.__weather.get_stations_data()['body']['devices']:
+                if device['station_name'] == name:
+                    self.__init__(weather, device)
+                    return True
+            return False
 
 
 
@@ -439,8 +531,8 @@ class Security(Netatmo):
 
     def __init__(self, name, log_level='WARNING'):
         Netatmo.__init__(self, log_level)
-        self.class_scope = ['read_camera', 'access_camera', 'write_camera']
-        for scope in self.class_scope:
+        self.__class_scope = ['read_camera', 'access_camera', 'write_camera']
+        for scope in self.__class_scope:
             if scope not in self.scope:
                 raise ScopeError(scope)
         self.name = name
