@@ -21,8 +21,8 @@ Use this method to return the station identified by `ID`.
 ### `Weather.get_stations_from_name(name)`
 Use this method to return all the stations identified by `name`. Returns a `dict` indexed by names.
 
-### `class Weather.Station(raw_data)`
-#### Attributes
+## `class Weather.Station(raw_data)`
+### Attributes
 - `raw_data`: complete dict returned by `get_station_from_id`.
 - `name`: station's name.
 - `id`: station's ID (MAC address).
