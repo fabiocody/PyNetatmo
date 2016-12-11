@@ -3,6 +3,12 @@
 ## `class netatmo.Weather(device_id=None, get_favorites=False, log_level='WARNING')`
 If you have a Netatmo Weather Station, you can pass its MAC address as `device_id`. Otherwise, you can access to your favorites stations setting `get_favorites` to True. You can set one of these or both, but if you don't set any, your Weather class will be quite useless.
 
+## Attributes
+- `device_id` - MAC address of the station;
+- `stations` - list of stations;
+- `my_station` - if `device_id` is provided, the station whose ID corresponds to the device_id provided;
+- `get_favorites` - whether to retrieve data from favorite stations or not.
+
 ## Methods
 
 ### `Weather.get_stations_data()`
@@ -26,7 +32,6 @@ Use this method to return all the stations identified by `name`. Returns a `dict
 - `rain`: rain measured by the station.
 - `wind_strength`: wind strength measured by the station.
 - `wind angle`: wind angle measured by the station.
-Obviously, a measured attribute is present only if the station can measure it.
 
 
 # Quick Tutorial
@@ -36,10 +41,10 @@ Obviously, a measured attribute is present only if the station can measure it.
 from netatmo import Weather
 
 # Create Weather instance
-w = Weather()
+w = Weather('70:ee:50:aa:bb:cc')
 
-# Get station from name
-s = w.get_stations_from_name('mystation')
+# Get station
+s = w.my_station
 
 # Print data
 print(s.name, s.temperature, s.humidity)

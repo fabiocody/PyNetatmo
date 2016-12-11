@@ -3,6 +3,12 @@
 ## `class netatmo.Thermostat(device_id, log_level='WARNING')`
 You have to pass the MAC address of your relay as `device_id`.
 
+## Attributes
+- `device_id` - MAC address of the relay;
+- `temperature` - current measured temperature;
+- `set_temperature` - current set temperature;
+- `relay_cmd` - current relay command.
+
 ## Methods
 
 ### `Thermostat.get_thermostats_data()`
@@ -10,9 +16,6 @@ API call. Use this method to get the full data JSON from your relay. Returns a `
 
 ### `Thermostat.get_module_ids()`
 Use this method to get the module ID(s) of the thermostat(s) connected to the relay. Returns a `list`.
-
-### `Thermostat.get_current_temperatures()`
-Use this method to get the measured and the set temperature from every thermostats connected to the relay. Returns a `dict` in the form `{'temp': [LIST_OF_TEMPERATURES], 'setpoint_temp': [LIST_OF_TEMPERATURES]}`.
 
 ### `Thermostat.set_therm_point(module_id, setpoint_mode, setpoint_endtime=None, setpoint_temp=None)`
 API call. Use this method to set the thermostat.
@@ -46,5 +49,5 @@ t = Thermostat('70:ee:50:aa:bb:cc')
 t.set_therm_point(t.get_module_ids()[0], 'manual', setpoint_temp=22)
 
 # Print thermostat's measured temperature and set temperature
-print(t.get_current_temperatures())
+print(t.temperature, t.set_temperature)
 ```

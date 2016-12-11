@@ -328,8 +328,11 @@ class Weather(Netatmo):
         return [self.Station(self, device) for device in self.get_stations_data()['body']['devices']]
 
     @property
-    def my_stations(self):
-        return [station for station in self.stations if station.id == self.device_id]
+    def my_station(self):
+        for station in self.stations:
+            if station.id == self.device_id:
+                return station
+        return None
 
     @property
     def device_id(self):
