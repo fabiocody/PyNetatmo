@@ -1,4 +1,5 @@
 # PyNetatmo Weather API Reference
+At the moment, only the outdoor module and its accessories are supported. Indoor module support is to be implemented soon.
 
 ## `class netatmo.Weather(device_id=None, get_favorites=False, log_level='WARNING')`
 If you have a Netatmo Weather Station, you can pass its MAC address as `device_id`. Otherwise, you can access to your favorites stations setting `get_favorites` to True. You can set one of these or both, but if you don't set any, your Weather class will be quite useless.
