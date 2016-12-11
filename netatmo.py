@@ -11,7 +11,7 @@ from platform import python_version_tuple
 from getpass import getpass
 
 
-__version__ = '0.0.12'
+__version__ = '0.0.13'
 
 logger = logging.getLogger('netatmo')
 logging.basicConfig(format='[*] %(levelname)s : %(module)s : %(message)s',  level=getattr(logging, 'WARNING'))
