@@ -26,7 +26,7 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Development Status :: 4 - Beta'
     ],
-    keywords='netatmo, thermostat',
+    keywords='netatmo, thermostat, weather, security, welcome',
     py_modules=['netatmo'],
     install_requires=['pillow']
 )
