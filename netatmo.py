@@ -388,6 +388,7 @@ class Weather(Netatmo):
             self.__name = raw_data['station_name']
             self.__id = raw_data['_id']
             self.__data_type = list(set([t for module in raw_data['modules'] for t in module['data_type']] + raw_data['data_type']))
+            self.__data_type.sort()
             self.__modules = raw_data['modules']
             logger.debug('Station.__init__ completed')
 
