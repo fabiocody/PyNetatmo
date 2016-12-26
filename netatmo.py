@@ -13,7 +13,7 @@ from time import time
 from datetime import timedelta
 
 
-__version__ = '0.0.14'
+__version__ = '0.0.15'
 
 logger = logging.getLogger('netatmo')
 logging.basicConfig(format='[*] %(levelname)s : %(module)s : %(message)s',  level=getattr(logging, 'WARNING'))
