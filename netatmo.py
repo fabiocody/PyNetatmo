@@ -11,13 +11,13 @@ from platform import python_version_tuple
 from getpass import getpass
 from time import time
 from datetime import timedelta
+from pwd import getpwall
 
 
 __version__ = '0.0.15'
 
 logger = logging.getLogger('netatmo')
 logging.basicConfig(format='[*] %(levelname)s : %(module)s : %(message)s',  level=getattr(logging, 'WARNING'))
-HOME = os.getenv('HOME') + '/'
 
 PY_VERSION = [int(i) for i in python_version_tuple()]
 if PY_VERSION[0] != 3 and PY_VERSION[1] < 4:
@@ -72,11 +72,18 @@ class ConfigError(NetatmoError):
 #  CONFIGURATION  #
 ###################
 
-try:
-    with open(os.path.join(HOME, '.pynetatmo.conf'), 'r') as f:
-        CONF = json.load(f)
-        logger.debug('Configuration loaded')
-except FileNotFoundError:
+for p in getpwall():
+    HOME = p.pw_dir + '/'
+    try:
+        CONF = None
+        with open(os.path.join(HOME, '.pynetatmo.conf'), 'r') as f:
+            CONF = json.load(f)
+            logger.debug('Configuration loaded')
+        break
+    except:
+        pass
+if not CONF:
+    HOME = os.getenv('HOME') + '/'
     configure = input('Configuration file not found.\nWould you like to be guided through the configuration steps (otherwise you will have to create the JSON file on your own)? [y/n] ')
     if configure.upper() == 'Y':
         with open(os.path.join(HOME, '.pynetatmo.conf'), 'w') as f:
