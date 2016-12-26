@@ -14,7 +14,7 @@ from datetime import timedelta
 from pwd import getpwall
 
 
-__version__ = '0.0.15'
+__version__ = '0.0.16'
 
 logger = logging.getLogger('netatmo')
 logging.basicConfig(format='[*] %(levelname)s : %(module)s : %(message)s',  level=getattr(logging, 'WARNING'))
@@ -73,7 +73,7 @@ class ConfigError(NetatmoError):
 ###################
 
 for p in getpwall():
-    HOME = p.pw_dir + '/'
+    HOME = p.pw_dir
     try:
         CONF = None
         with open(os.path.join(HOME, '.pynetatmo.conf'), 'r') as f:
