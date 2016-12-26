@@ -135,6 +135,7 @@ class Netatmo(object):
             auth_dict = self.auth_call(CONF['user'], CONF['password'], CONF['client_id'], CONF['client_secret'], CONF['scope'])
         except KeyError:
             raise ConfigError('key')
+        self.__timestamp = time()
         self.__access_token = auth_dict['access_token']
         self.__refresh_token = auth_dict['refresh_token']
         self.__scope = auth_dict['scope']
@@ -159,13 +160,12 @@ class Netatmo(object):
             logger.debug('Your refresh token is: ' + refresh_token)
             logger.debug('Your scopes are: ' + str(scope))
             logger.debug('Authorization completed')
-            self.timestamp = time()
             return {'access_token': access_token, 'refresh_token': refresh_token, 'scope': scope}
         except requests.exceptions.HTTPError as error:
             raise APIError(error.response.text)
 
     def check_token_validity(self):
-        if time() - self.timestamp < timedelta(hours=1).seconds:
+        if time() - self.__timestamp < timedelta(hours=1).seconds:
             self.auth()
 
 
@@ -213,7 +213,7 @@ class Thermostat(Netatmo):
 
     def get_thermostats_data(self):
         logger.debug('Getting thermostat data...')
-        Netatmo.check_token_validity()
+        Netatmo.check_token_validity(self)
         params = {
             'access_token': self.access_token,
             'device_id': self.device_id
@@ -238,7 +238,7 @@ class Thermostat(Netatmo):
     def set_therm_point(self, module_id, setpoint_mode, setpoint_endtime=None, setpoint_temp=None):
         logger.debug('Setting thermal point...')
         allowed_setpoint_modes = ['program', 'away', 'hg', 'manual', 'off', 'max']
-        Netatmo.check_token_validity()
+        Netatmo.check_token_validity(self)
         params = {
             'access_token': self.access_token,
             'device_id': self.device_id,
@@ -264,7 +264,7 @@ class Thermostat(Netatmo):
 
     def switch_schedule(self, module_id, schedule_id):
         logger.debug('Switching schedule...')
-        Netatmo.check_token_validity()
+        Netatmo.check_token_validity(self)
         params = {
             'access_token': self.access_token,
             'device_id': self.device_id,
@@ -281,7 +281,7 @@ class Thermostat(Netatmo):
 
     def create_new_schedule(self, module_id, zones, timetable, name):
         logger.debug('Creating new schedule...')
-        Netatmo.check_token_validity()
+        Netatmo.check_token_validity(self)
         params = {
             'access-token': self.access_token,
             'device_id': self.device_id,
@@ -300,7 +300,7 @@ class Thermostat(Netatmo):
 
     def sync_schedule(self, module_id, zones, timetable):
         logger.debug('Creating new schedule...')
-        Netatmo.check_token_validity()
+        Netatmo.check_token_validity(self)
         params = {
             'access-token': self.access_token,
             'device_id': self.device_id,
@@ -362,7 +362,7 @@ class Weather(Netatmo):
 
     def get_stations_data(self):
         logger.debug('Getting stations\' data...')
-        Netatmo.check_token_validity()
+        Netatmo.check_token_validity(self)
         params = {
             'access_token': self.access_token,
             'get_favorites': str(self.get_favorites).lower()
@@ -714,7 +714,7 @@ class Security(Netatmo):
 
     def get_home_data(self, size=15, home_id=None):
         logger.debug('Getting home data...')
-        Netatmo.check_token_validity()
+        Netatmo.check_token_validity(self)
         params = {
             'access_token': self.access_token,
             'home_id': home_id,
@@ -751,7 +751,7 @@ class Security(Netatmo):
             raise TypeError('The input must be an event or a person object')
         logger.debug('Getting event related image...')
         try:
-            Netatmo.check_token_validity()
+            Netatmo.check_token_validity(self)
             base_url = 'https://api.netatmo.com/api/getcamerapicture?'
             try:
                 url = base_url + 'image_id=' + str(event.snapshot['id']) + '&key=' + str(event.snapshot['key'])
@@ -771,7 +771,7 @@ class Security(Netatmo):
         if type(event) is not Security.Event:
             raise TypeError('Input must be an event obj')
         logger.debug('Getting events...')
-        Netatmo.check_token_validity()
+        Netatmo.check_token_validity(self)
         params = {
             'access_token': self.access_token,
             'home_id': self.home_id,
@@ -788,7 +788,7 @@ class Security(Netatmo):
     def set_person_away(self, person=None):
         if type(person) not in [Security.Person, None]:
             raise TypeError('The input must be a Security.Person object or None if you want to set all people away')
-        Netatmo.check_token_validity()
+        Netatmo.check_token_validity(self)
         params = {
             'access_token': self.access_token,
             'home_id': self.home_id
