@@ -14,15 +14,14 @@ from datetime import timedelta
 from pwd import getpwall
 
 
-__version__ = '0.0.16'
+__version__ = '0.0.17'
 
 logger = logging.getLogger('netatmo')
 logging.basicConfig(format='[*] %(levelname)s : %(module)s : %(message)s',  level=getattr(logging, 'WARNING'))
 
 PY_VERSION = [int(i) for i in python_version_tuple()]
 if PY_VERSION[0] != 3 and PY_VERSION[1] < 4:
-    logger.error('Python 3.4 or higher is required. Aborted')
-    exit(1)
+    raise RuntimeError('Python 3.4 or higher is required. Aborted')
 
 
 
@@ -426,6 +425,12 @@ class Weather(Netatmo):
         @property
         def data_type(self):
             return self.__data_type
+
+        @property
+        def modules(self):
+            m = list(set([module['module_name'] for module in self.__raw_data['modules']] + [self.__raw_data['module_name']]))
+            m.sort()
+            return m
 
         @property
         def temperature(self):
