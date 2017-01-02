@@ -14,7 +14,7 @@ from datetime import timedelta
 from pwd import getpwall
 
 
-__version__ = '0.0.17'
+__version__ = '0.0.18'
 
 logger = logging.getLogger('netatmo')
 logging.basicConfig(format='[*] %(levelname)s : %(module)s : %(message)s',  level=getattr(logging, 'WARNING'))
@@ -434,195 +434,179 @@ class Weather(Netatmo):
 
         @property
         def temperature(self):
-            temperatures = dict()
-            if self.refresh():
-                if 'Temperature' in self.__raw_data['dashboard_data']:
-                    if 'module_name' in self.__raw_data:
-                        module_name = self.__raw_data['module_name']
-                    else:
-                        module_name = self.name
-                    temperatures[module_name] = self.__raw_data['dashboard_data']['Temperature']
-                for module in self.__modules:
-                    if 'Temperature' in module['dashboard_data']:
-                        if 'module_name' in module:
-                            module_name = module['module_name']
+            if 'Temperature' in self.data_type:
+                if self.refresh():
+                    temperatures = dict()
+                    if 'Temperature' in self.__raw_data['dashboard_data']:
+                        if 'module_name' in self.__raw_data:
+                            module_name = self.__raw_data['module_name']
                         else:
                             module_name = self.name
-                        temperatures[module_name]=  module['dashboard_data']['Temperature']
-                if len(temperatures):
-                    return temperatures
-                else:
-                    return None
-            else:
-                return None
+                        temperatures[module_name] = self.__raw_data['dashboard_data']['Temperature']
+                    for module in self.__modules:
+                        if 'Temperature' in module['dashboard_data']:
+                            if 'module_name' in module:
+                                module_name = module['module_name']
+                            else:
+                                module_name = self.name
+                            temperatures[module_name]=  module['dashboard_data']['Temperature']
+                    if len(temperatures):
+                        return temperatures
+            return None
 
         @property
         def humidity(self):
-            humidities = dict()
-            if self.refresh():
-                if 'Humidity' in self.__raw_data['dashboard_data']:
-                    if 'module_name' in self.__raw_data:
-                        module_name = self.__raw_data['module_name']
-                    else:
-                        module_name = self.name
-                    humidities[module_name] = self.__raw_data['dashboard_data']['Humidity']
-                for module in self.__modules:
-                    if 'Humidity' in module['dashboard_data']:
-                        if 'module_name' in module:
-                            module_name = module['module_name']
+            if 'Humidity' in self.data_type:
+                if self.refresh():
+                    humidities = dict()
+                    if 'Humidity' in self.__raw_data['dashboard_data']:
+                        if 'module_name' in self.__raw_data:
+                            module_name = self.__raw_data['module_name']
                         else:
                             module_name = self.name
-                        humidities[module_name]=  module['dashboard_data']['Humidity']
-                if len(humidities):
-                    return humidities
-                else:
-                    return None
-            else:
-                return None
+                        humidities[module_name] = self.__raw_data['dashboard_data']['Humidity']
+                    for module in self.__modules:
+                        if 'Humidity' in module['dashboard_data']:
+                            if 'module_name' in module:
+                                module_name = module['module_name']
+                            else:
+                                module_name = self.name
+                            humidities[module_name]=  module['dashboard_data']['Humidity']
+                    if len(humidities):
+                        return humidities
+            return None
 
         @property
         def pressure(self):
-            pressures = dict()
-            if self.refresh():
-                if 'Pressure' in self.__raw_data['dashboard_data']:
-                    if 'module_name' in self.__raw_data:
-                        module_name = self.__raw_data['module_name']
-                    else:
-                        module_name = self.name
-                    pressures[module_name] = self.__raw_data['dashboard_data']['Pressure']
-                for module in self.__modules:
-                    if 'Pressure' in module['dashboard_data']:
-                        if 'module_name' in module:
-                            module_name = module['module_name']
+            if 'Pressure' in self.data_type:
+                if self.refresh():
+                    pressures = dict()
+                    if 'Pressure' in self.__raw_data['dashboard_data']:
+                        if 'module_name' in self.__raw_data:
+                            module_name = self.__raw_data['module_name']
                         else:
                             module_name = self.name
-                        pressures[module_name]=  module['dashboard_data']['Pressure']
-                if len(pressures):
-                    return pressures
-                else:
-                    return None
-            else:
-                return None
+                        pressures[module_name] = self.__raw_data['dashboard_data']['Pressure']
+                    for module in self.__modules:
+                        if 'Pressure' in module['dashboard_data']:
+                            if 'module_name' in module:
+                                module_name = module['module_name']
+                            else:
+                                module_name = self.name
+                            pressures[module_name]=  module['dashboard_data']['Pressure']
+                    if len(pressures):
+                        return pressures
+            return None
 
         @property
         def noise(self):
-            noises = dict()
-            if self.refresh():
-                if 'Noise' in self.__raw_data['dashboard_data']:
-                    if 'module_name' in self.__raw_data:
-                        module_name = self.__raw_data['module_name']
-                    else:
-                        module_name = self.name
-                    noises[module_name] = self.__raw_data['dashboard_data']['Noise']
-                for module in self.__modules:
-                    if 'Noise' in module['dashboard_data']:
-                        if 'module_name' in module:
-                            module_name = module['module_name']
+            if 'Noise' in self.data_type:
+                if self.refresh():
+                    noises = dict()
+                    if 'Noise' in self.__raw_data['dashboard_data']:
+                        if 'module_name' in self.__raw_data:
+                            module_name = self.__raw_data['module_name']
                         else:
                             module_name = self.name
-                        noises[module_name]=  module['dashboard_data']['Noise']
-                if len(noises):
-                    return noises
-                else:
-                    return None
-            else:
-                return None
+                        noises[module_name] = self.__raw_data['dashboard_data']['Noise']
+                    for module in self.__modules:
+                        if 'Noise' in module['dashboard_data']:
+                            if 'module_name' in module:
+                                module_name = module['module_name']
+                            else:
+                                module_name = self.name
+                            noises[module_name]=  module['dashboard_data']['Noise']
+                    if len(noises):
+                        return noises
+            return None
 
         @property
         def co2(self):
-            co2s = dict()
-            if self.refresh():
-                if 'CO2' in self.__raw_data['dashboard_data']:
-                    if 'module_name' in self.__raw_data:
-                        module_name = self.__raw_data['module_name']
-                    else:
-                        module_name = self.name
-                    co2s[module_name] = self.__raw_data['dashboard_data']['CO2']
-                for module in self.__modules:
-                    if 'CO2' in module['dashboard_data']:
-                        if 'module_name' in module:
-                            module_name = module['module_name']
+            if 'CO2' in self.data_type:
+                if self.refresh():
+                    co2s = dict()
+                    if 'CO2' in self.__raw_data['dashboard_data']:
+                        if 'module_name' in self.__raw_data:
+                            module_name = self.__raw_data['module_name']
                         else:
                             module_name = self.name
-                        co2s[module_name]=  module['dashboard_data']['CO2']
-                if len(co2s):
-                    return co2s
-                else:
-                    return None
-            else:
-                return None
+                        co2s[module_name] = self.__raw_data['dashboard_data']['CO2']
+                    for module in self.__modules:
+                        if 'CO2' in module['dashboard_data']:
+                            if 'module_name' in module:
+                                module_name = module['module_name']
+                            else:
+                                module_name = self.name
+                            co2s[module_name]=  module['dashboard_data']['CO2']
+                    if len(co2s):
+                        return co2s
+            return None
 
         @property
         def rain(self):
-            rains = dict()
-            if self.refresh():
-                if 'Rain' in self.__raw_data['dashboard_data']:
-                    if 'module_name' in self.__raw_data:
-                        module_name = self.__raw_data['module_name']
-                    else:
-                        module_name = self.name
-                    rains[module_name] = self.__raw_data['dashboard_data']['Rain']
-                for module in self.__modules:
-                    if 'Rain' in module['dashboard_data']:
-                        if 'module_name' in module:
-                            module_name = module['module_name']
+            if 'Rain' in self.data_type:
+                if self.refresh():
+                    rains = dict()
+                    if 'Rain' in self.__raw_data['dashboard_data']:
+                        if 'module_name' in self.__raw_data:
+                            module_name = self.__raw_data['module_name']
                         else:
                             module_name = self.name
-                        rains[module_name] = module['dashboard_data']['Rain']
-                if len(rains):
-                    return rains
-                else:
-                    return None
-            else:
-                return None
+                        rains[module_name] = self.__raw_data['dashboard_data']['Rain']
+                    for module in self.__modules:
+                        if 'Rain' in module['dashboard_data']:
+                            if 'module_name' in module:
+                                module_name = module['module_name']
+                            else:
+                                module_name = self.name
+                            rains[module_name] = module['dashboard_data']['Rain']
+                    if len(rains):
+                        return rains
+            return None
 
         @property
         def wind_strength(self):
-            winds = dict()
-            if self.refresh():
-                if 'WindStrength' in self.__raw_data['dashboard_data']:
-                    if 'module_name' in self.__raw_data:
-                        module_name = self.__raw_data['module_name']
-                    else:
-                        module_name = self.name
-                    winds[module_name] = self.__raw_data['dashboard_data']['WindStrength']
-                for module in self.__modules:
-                    if 'WindStrength' in module['dashboard_data']:
-                        if 'module_name' in module:
-                            module_name = module['module_name']
+            if 'Wind' in self.data_type:
+                if self.refresh():
+                    winds = dict()
+                    if 'WindStrength' in self.__raw_data['dashboard_data']:
+                        if 'module_name' in self.__raw_data:
+                            module_name = self.__raw_data['module_name']
                         else:
                             module_name = self.name
-                        winds[module_name] = module['dashboard_data']['WindStrength']
-                if len(winds):
-                    return winds
-                else:
-                    return None
-            else:
-                return None
+                        winds[module_name] = self.__raw_data['dashboard_data']['WindStrength']
+                    for module in self.__modules:
+                        if 'WindStrength' in module['dashboard_data']:
+                            if 'module_name' in module:
+                                module_name = module['module_name']
+                            else:
+                                module_name = self.name
+                            winds[module_name] = module['dashboard_data']['WindStrength']
+                    if len(winds):
+                        return winds
+            return None
 
         @property
         def wind_angle(self):
-            winds = dict()
-            if self.refresh():
-                if 'WindAngle' in self.__raw_data['dashboard_data']:
-                    if 'module_name' in self.__raw_data:
-                        module_name = self.__raw_data['module_name']
-                    else:
-                        module_name = self.name
-                    winds[module_name] = self.__raw_data['dashboard_data']['WindAngle']
-                for module in self.__modules:
-                    if 'WindAngle' in module['dashboard_data']:
-                        if 'module_name' in module:
-                            module_name = module['module_name']
+            if 'Wind' in self.data_type:
+                if self.refresh():
+                    winds = dict()
+                    if 'WindAngle' in self.__raw_data['dashboard_data']:
+                        if 'module_name' in self.__raw_data:
+                            module_name = self.__raw_data['module_name']
                         else:
                             module_name = self.name
-                        winds[module_name] = module['dashboard_data']['WindAngle']
-                if len(winds):
-                    return winds
-                else:
-                    return None
-            else:
-                return None
+                        winds[module_name] = self.__raw_data['dashboard_data']['WindAngle']
+                    for module in self.__modules:
+                        if 'WindAngle' in module['dashboard_data']:
+                            if 'module_name' in module:
+                                module_name = module['module_name']
+                            else:
+                                module_name = self.name
+                            winds[module_name] = module['dashboard_data']['WindAngle']
+                    if len(winds):
+                        return winds
+            return None
 
         def __str__(self):
             string = '••Netatmo Weather.Station Object••\n\n'
