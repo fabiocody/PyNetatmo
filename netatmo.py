@@ -736,10 +736,10 @@ class Security(Netatmo):
 
     def get_persons(self, name=None, pseudo=False):
         if pseudo not in [True, False]:
-            raise TypeError('\'Pseudo\' must be a boolean value')
-        if type(name) != str:
-            raise TypeError('Name must be a string')
+            raise TypeError('\'pseudo\' must be a boolean value')
         if name != None:
+            if type(name) != str:
+                raise TypeError('\'name\' must be a string')
             return [self.Person(c) for c in self.get_home_data()['persons'] if 'pseudo' in c.keys() and c['pseudo'] == name][0]
         if pseudo == True:
             return [self.Person(c) for c in self.get_home_data()['persons'] if 'pseudo' in c.keys()]
