@@ -735,7 +735,7 @@ class Security(Netatmo):
         return [self.Event(e) for e in self.get_home_data(numbers_of_events)['events']]
 
     def get_persons(self, name=None, pseudo=False):
-        if pseudo not in [True, False]:
+        if type(pseudo) != bool:
             raise TypeError('\'pseudo\' must be a boolean value')
         if name != None:
             if type(name) != str:
