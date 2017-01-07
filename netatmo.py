@@ -14,7 +14,7 @@ from datetime import timedelta
 from pwd import getpwall
 
 
-__version__ = '0.0.18'
+__version__ = '0.0.19'
 
 logger = logging.getLogger('netatmo')
 logging.basicConfig(format='[*] %(levelname)s : %(module)s : %(message)s',  level=getattr(logging, 'WARNING'))
