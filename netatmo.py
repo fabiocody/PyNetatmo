@@ -734,9 +734,15 @@ class Security(Netatmo):
     def get_events(self, numbers_of_events=15):
         return [self.Event(e) for e in self.get_home_data(numbers_of_events)['events']]
 
-    def get_persons(self, name=None):
+    def get_persons(self, name=None, pseudo=False):
+        if pseudo not in [True, False]:
+            raise TypeError('\'Pseudo\' must be a boolean value')
+        if type(name) != str:
+            raise TypeError('Name must be a string')
         if name != None:
             return [self.Person(c) for c in self.get_home_data()['persons'] if 'pseudo' in c.keys() and c['pseudo'] == name][0]
+        if pseudo == True:
+            return [self.Person(c) for c in self.get_home_data()['persons'] if 'pseudo' in c.keys()]
         return [self.Person(c) for c in self.get_home_data()['persons']]
 
     def get_camera_picture(self, event, show=False):
