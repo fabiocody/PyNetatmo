@@ -166,6 +166,7 @@ class Netatmo(object):
             logger.debug('Your refresh token is: ' + refresh_token)
             logger.debug('Your scopes are: ' + str(scope))
             logger.debug('Authorization completed')
+            response.connection.close()
             return {'access_token': access_token, 'refresh_token': refresh_token, 'scope': scope}
         except requests.exceptions.HTTPError as error:
             raise APIError(error.response.text)
@@ -228,7 +229,9 @@ class Thermostat(Netatmo):
             response = requests.post('https://api.netatmo.com/api/getthermostatsdata', params=params)
             response.raise_for_status()
             logger.debug('Request completed')
-            return response.json()['body']
+            data = response.json()['body']
+            response.connection.close()
+            return data
         except requests.exceptions.HTTPError as error:
             raise APIError(error.response.text)
 
@@ -260,7 +263,10 @@ class Thermostat(Netatmo):
                 response = requests.post('https://api.netatmo.com/api/setthermpoint', params=params)
                 response.raise_for_status()
                 logger.debug('Request completed')
-                return response.text
+                response.connection.close()
+                data = response.text
+                response.connection.close()
+                return data
             except requests.exceptions.HTTPError as error:
                 raise APIError(error.response.text)
         else:
@@ -281,7 +287,9 @@ class Thermostat(Netatmo):
             response = requests.get('https://api.netatmo.com/api/switchschedule', params=params)
             response.raise_for_status()
             logger.debug('Request completed')
-            return response.text
+            data = response.text
+            response.connection.close()
+            return data
         except requests.exceptions.HTTPError as error:
             raise APIError(error.response.text)
 
@@ -300,7 +308,9 @@ class Thermostat(Netatmo):
             response = requests.get('https://api.netatmo.com/api/createnewschedule', params=params)
             response.raise_for_status()
             logger.debug('Request completed')
-            return response.text
+            data = response.text
+            response.connection.close()
+            return data
         except requests.exceptions.HTTPError as error:
             raise APIError(error.response.text)
 
@@ -318,7 +328,9 @@ class Thermostat(Netatmo):
             response = requests.get('https://api.netatmo.com/api/syncschedule', params=params)
             response.raise_for_status()
             logger.debug('Request completed')
-            return response.text
+            data = response.text
+            response.connection.close()
+            return data
         except requests.exceptions.HTTPError as error:
             raise APIError(error.response.text)
 
@@ -340,8 +352,6 @@ class Weather(Netatmo):
                 raise ScopeError(scope)
         self.__device_id = device_id
         self.get_favorites = get_favorites
-        #self.stations = [self.Station(device) for device in self.get_stations_data()['body']['devices']]
-        #self.my_stations = [station for station in self.stations if station.id == self.device_id]
         logger.debug('Weather.__init__ completed')
 
     @property
@@ -379,7 +389,9 @@ class Weather(Netatmo):
             response = requests.post('https://api.netatmo.com/api/getstationsdata', params=params)
             response.raise_for_status()
             logger.debug('Request completed')
-            return response.json()
+            data = response.json()
+            response.connection.close()
+            return data
         except requests.exceptions.HTTPError as error:
             raise APIError(error.response.text)
 
@@ -721,6 +733,7 @@ class Security(Netatmo):
             response.raise_for_status()
             data = response.json()['body']['homes']
             logger.debug('Request completed')
+            response.connection.close()
             data = [h for h in data if h['name'] == self.name]
             if len(data) == 0:
                 raise self._NoDevice('No device with the name provided')
@@ -762,6 +775,7 @@ class Security(Netatmo):
             response = requests.get(url)
             response.raise_for_status()
             img = Image.open(BytesIO(response.content))
+            response.connection.close()
             logger.debug('Request completed')
             if show == True:
                 img.show()
@@ -783,6 +797,7 @@ class Security(Netatmo):
             response = requests.post('https://api.netatmo.com/api/geteventsuntil', params=params)
             response.raise_for_status()
             data = response.json()['body']['events_list']
+            response.connection.close()
             return [self.Event(e) for e in data]
         except requests.exceptions.HTTPError as error:
             raise APIError(error.response.text)
@@ -801,6 +816,8 @@ class Security(Netatmo):
         try:
             response = requests.post('https://api.netatmo.com/api/setpersonsaway', params=params)
             response.raise_for_status()
-            return response.text
+            data = response.text
+            response.connection.close()
+            return data
         except requests.exceptions.HTTPError as error:
             raise APIError(error.response.text)
