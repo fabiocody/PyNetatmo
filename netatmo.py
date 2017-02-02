@@ -821,3 +821,36 @@ class Security(Netatmo):
             return data
         except requests.exceptions.HTTPError as error:
             raise APIError(error.response.text)
+
+    def Addwebhook(self, url):
+        Netatmo.check_token_validity(self)
+        params = {
+            'access_token': self.access_token,
+            'url': url,
+            'app_types': 'app_security'
+        }
+
+        try:
+            response = requests.post('https://api.netatmo.com/api/addwebhook', params=params)
+            response.raise_for_status()
+            data = response.text
+            response.connection.close()
+            print(data)
+        except requests.exceptions.HTTPError as error:
+            raise APIError(error.response.text)
+
+    def Dropwebhook(self):
+        Netatmo.check_token_validity(self)
+        params = {
+            'access_token': self.access_token,
+            'app_types': 'app_security'
+        }
+
+        try:
+            response = requests.post('https://api.netatmo.com/api/dropwebhook', params=params)
+            response.raise_for_status()
+            data = response.text
+            response.connection.close()
+            print(data)
+        except requests.exceptions.HTTPError as error:
+            raise APIError(error.response.text)
