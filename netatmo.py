@@ -336,11 +336,17 @@ class Weather(Netatmo):
 				raise ScopeError(scope)
 		self.__device_id = device_id
 		self.get_favorites = get_favorites
+		self.__stations = None
+		self.__cache = None
+		self.__cache_timestamp = None
+		self.__CACHE_VALIDITY = 600		# seconds = 10 minutes
 		logger.debug('Weather.__init__ completed')
 
 	@property
 	def stations(self):
-		return [self.Station(self, device) for device in self.get_stations_data()['body']['devices']]
+		if not self.__stations:
+			self.__stations = [self.Station(self, device) for device in self.get_stations_data()['body']['devices']]
+		return self.__stations
 
 	@property
 	def my_station(self):
@@ -361,23 +367,21 @@ class Weather(Netatmo):
 
 
 	def get_stations_data(self):
-		logger.debug('Getting stations\' data...')
+		logger.debug('Checking cache...')
+		if self.__cache and time() - self.__cache_timestamp < self.__CACHE_VALIDITY:
+			return self.__cache
+		logger.debug('Cache is invalid: getting stations data from the api...')
 		self._check_token_validity()
-		params = {
+		payload = {
 			'access_token': self.access_token,
 			'get_favorites': str(self.get_favorites).lower()
 		}
 		if self.device_id:
-			params['device_id'] = self.device_id
-		try:
-			response = requests.post('https://api.netatmo.com/api/getstationsdata', params=params)
-			response.raise_for_status()
-			logger.debug('Request completed')
-			data = response.json()
-			response.connection.close()
-			return data
-		except requests.exceptions.HTTPError as error:
-			raise APIError(error.response.text)
+			payload['device_id'] = self.device_id
+		data = self._api_call('/api/getstationsdata', payload)
+		self.__cache = data
+		self.__cache_timestamp = time()
+		return data
 
 	def get_station_from_id(self, ID):
 		for device in self.stations:
