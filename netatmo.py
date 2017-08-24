@@ -1,23 +1,21 @@
 #!/usr/bin/env python3
 
 import os
-import requests
 import json
 import logging
-from sys import exit, stdin
 from io import BytesIO
-from PIL import Image
 from platform import python_version_tuple
 from getpass import getpass
 from time import time
-from datetime import timedelta
 from pwd import getpwall
+import requests
+from PIL import Image
 
 
 __version__ = '0.1'
 
 logger = logging.getLogger('netatmo')
-logging.basicConfig(format='[*] %(levelname)s : %(module)s : %(message)s',  level=getattr(logging, 'WARNING'))
+logging.basicConfig(format='[*] %(levelname)s : %(module)s : %(message)s', level=getattr(logging, 'WARNING'))
 
 PY_VERSION = [int(i) for i in python_version_tuple()]
 if PY_VERSION[0] != 3 and PY_VERSION[1] < 4:
@@ -114,8 +112,10 @@ if not CONF:
 class Netatmo(object):
 
 	def __init__(self, log_level):
-		logging.basicConfig(format='[*] %(levelname)s : %(module)s : %(message)s',  level=getattr(logging, log_level))
+		logging.basicConfig(format='[*] %(levelname)s : %(module)s : %(message)s', level=getattr(logging, log_level))
 		self.__BASE_URL = 'https://api.netatmo.com'
+		self.__access_token = None
+		self.__refresh_token = None
 		self._auth()
 		logger.debug('Netatmo.__init__ completed')
 
@@ -138,7 +138,7 @@ class Netatmo(object):
 		return string
 
 	def _api_call(self, resource, payload):
-		logger.debug('API call : {resource} : {payload}'.format(resource=resource, payload=payload))
+		logger.debug('API call : %s : %s', resource, payload)
 		try:
 			response = requests.post(self.__BASE_URL + resource, data=payload)
 			response.raise_for_status()
@@ -277,10 +277,8 @@ class Thermostat(Netatmo):
 			payload['setpoint_temp'] = setpoint_temp
 		if setpoint_mode in allowed_setpoint_modes:
 			return self._api_call('/api/setthermpoint', payload)
-		else:
-			logger.error('Invalid choice for setpoint_mode. Choose from ' +
-						 str(allowed_setpoint_modes))
-			return False
+		logger.error('Invalid choice for setpoint_mode. Choose from ' + str(allowed_setpoint_modes))
+		return False
 
 	def switch_schedule(self, module_id, schedule_id):
 		logger.debug('Switching schedule...')
@@ -394,12 +392,11 @@ class Weather(Netatmo):
 		for device in self.stations:
 			if device.name == name:
 				stations[name] = device
-		if len(stations) == 0:
+		if not stations:
 			return None
 		elif len(stations) == 1:
 			return stations[name]
-		else:
-			return stations
+		return stations
 
 
 	class Station(object):
@@ -449,8 +446,8 @@ class Weather(Netatmo):
 								module_name = module['module_name']
 							else:
 								module_name = self.name
-							temperatures[module_name]=  module['dashboard_data']['Temperature']
-					if len(temperatures):
+							temperatures[module_name] = module['dashboard_data']['Temperature']
+					if temperatures:
 						return temperatures
 			return None
 
@@ -471,8 +468,8 @@ class Weather(Netatmo):
 								module_name = module['module_name']
 							else:
 								module_name = self.name
-							humidities[module_name]=  module['dashboard_data']['Humidity']
-					if len(humidities):
+							humidities[module_name] = module['dashboard_data']['Humidity']
+					if humidities:
 						return humidities
 			return None
 
@@ -493,8 +490,8 @@ class Weather(Netatmo):
 								module_name = module['module_name']
 							else:
 								module_name = self.name
-							pressures[module_name]=  module['dashboard_data']['Pressure']
-					if len(pressures):
+							pressures[module_name] = module['dashboard_data']['Pressure']
+					if pressures:
 						return pressures
 			return None
 
@@ -515,8 +512,8 @@ class Weather(Netatmo):
 								module_name = module['module_name']
 							else:
 								module_name = self.name
-							noises[module_name]=  module['dashboard_data']['Noise']
-					if len(noises):
+							noises[module_name] = module['dashboard_data']['Noise']
+					if noises:
 						return noises
 			return None
 
@@ -537,8 +534,8 @@ class Weather(Netatmo):
 								module_name = module['module_name']
 							else:
 								module_name = self.name
-							co2s[module_name]=  module['dashboard_data']['CO2']
-					if len(co2s):
+							co2s[module_name] = module['dashboard_data']['CO2']
+					if co2s:
 						return co2s
 			return None
 
@@ -560,7 +557,7 @@ class Weather(Netatmo):
 							else:
 								module_name = self.name
 							rains[module_name] = module['dashboard_data']['Rain']
-					if len(rains):
+					if rains:
 						return rains
 			return None
 
@@ -582,7 +579,7 @@ class Weather(Netatmo):
 							else:
 								module_name = self.name
 							winds[module_name] = module['dashboard_data']['WindStrength']
-					if len(winds):
+					if winds:
 						return winds
 			return None
 
@@ -604,7 +601,7 @@ class Weather(Netatmo):
 							else:
 								module_name = self.name
 							winds[module_name] = module['dashboard_data']['WindAngle']
-					if len(winds):
+					if winds:
 						return winds
 			return None
 
@@ -723,7 +720,7 @@ class Security(Netatmo):
 			logger.debug('Request completed')
 			response.connection.close()
 			data = [h for h in data if h['name'] == self.name]
-			if len(data) == 0:
+			if not data:
 				raise self._NoDevice('No device with the name provided')
 			return data[0]
 		except requests.exceptions.HTTPError as error:
@@ -736,21 +733,25 @@ class Security(Netatmo):
 		return [self.Event(e) for e in self.get_home_data(numbers_of_events)['events']]
 
 	def get_persons(self, name=None, pseudo=False):
-		if type(pseudo) != bool:
+		#if type(pseudo) != bool:
+		if not isinstance(pseudo, bool):
 			raise TypeError('\'pseudo\' must be a boolean value')
 		if name != None:
-			if type(name) != str:
+			#if type(name) != str:
+			if not isinstance(name, str):
 				raise TypeError('\'name\' must be a string')
 			return [self.Person(c) for c in self.get_home_data()['persons'] if 'pseudo' in c.keys() and c['pseudo'] == name][0]
-		if pseudo == True:
+		if pseudo:
 			return [self.Person(c) for c in self.get_home_data()['persons'] if 'pseudo' in c.keys()]
 		return [self.Person(c) for c in self.get_home_data()['persons']]
 
 	def get_camera_picture(self, event, show=False):
-		if type(event) == Security.Event:
+		#if type(event) == Security.Event:
+		if isinstance(event, Security.Event):
 			if event.type not in ['movement', 'person']:
 				raise TypeError('The input event must be a movement or a \'person seen event\'. Only these have related screenshots')
-		if type(event) not in [Security.Event, Security.Person]:
+		#if type(event) not in [Security.Event, Security.Person]:
+		if not isinstance(event, (Security.Event, Security.Person)):
 			raise TypeError('The input must be an event or a person object')
 		logger.debug('Getting event related image...')
 		try:
@@ -765,14 +766,15 @@ class Security(Netatmo):
 			img = Image.open(BytesIO(response.content))
 			response.connection.close()
 			logger.debug('Request completed')
-			if show == True:
+			if show:
 				img.show()
 			return img
 		except requests.exceptions.HTTPError as error:
 			raise APIError(error.response.text)
 
 	def get_events_until(self, event):
-		if type(event) is not Security.Event:
+		#if type(event) is not Security.Event:
+		if not isinstance(event, Security.Event):
 			raise TypeError('Input must be an event obj')
 		logger.debug('Getting events...')
 		self._check_token_validity()
@@ -791,7 +793,8 @@ class Security(Netatmo):
 			raise APIError(error.response.text)
 
 	def set_person_away(self, person=None):
-		if type(person) not in [Security.Person, None]:
+		#if type(person) not in [Security.Person, None]:
+		if not isinstance(person, (Security.Person, None)):
 			raise TypeError('The input must be a Security.Person object or None if you want to set all people away')
 		self._check_token_validity()
 		params = {
