@@ -12,7 +12,7 @@ import requests
 from PIL import Image
 
 
-__version__ = '0.1'
+__version__ = '0.1.1'
 
 logger = logging.getLogger('netatmo')
 logging.basicConfig(format='[*] %(levelname)s : %(module)s : %(message)s', level=getattr(logging, 'WARNING'))
@@ -116,6 +116,8 @@ class Netatmo(object):
 		self.__BASE_URL = 'https://api.netatmo.com'
 		self.__access_token = None
 		self.__refresh_token = None
+		self.__expires_in = None
+		self.__timestamp = None
 		self._auth()
 		logger.debug('Netatmo.__init__ completed')
 
@@ -183,8 +185,10 @@ class Netatmo(object):
 				'client_secret': CONF['client_secret']
 			}
 			data = self._api_call('/oauth2/token', payload)
+			self.__timestamp = time()
 			self.__access_token = data['access_token']
 			self.__refresh_token = data['refresh_token']
+			self.__expires_in = data['expires_in']
 		except KeyError:
 			raise ConfigError('key')
 
