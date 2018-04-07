@@ -5,7 +5,7 @@ python:
 - '3.6'
 - nightly
 sudo: required
-install: pip3 install pylint pillow
+install: pip3 install pylint pillow requests
 script: pylint *.py -E
 deploy:
   provider: pypi

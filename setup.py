@@ -28,5 +28,5 @@ setup(
 	],
 	keywords='netatmo, thermostat, weather, security, welcome',
 	py_modules=['netatmo'],
-	install_requires=['pillow']
+	install_requires=['pillow', 'requests']
 )
